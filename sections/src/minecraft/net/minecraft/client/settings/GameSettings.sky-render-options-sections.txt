@@ -1,0 +1,39 @@
+Extracted sections from: src\minecraft\net\minecraft\client\settings\GameSettings.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 92-99 | render distance and vanilla cloud setting =====
+    public int renderDistanceChunks = -1;
+    public boolean viewBobbing = true;
+    public boolean anaglyph;
+    public boolean fboEnable = true;
+    public int limitFramerate = 120;
+
+    /** Clouds flag */
+    public int clouds = 2;
+
+===== SOURCE LINES 189-189 | gamma setting =====
+    public float gammaSetting;
+
+===== SOURCE LINES 212-225 | OptiFine cloud height, weather, sky, stars and sun/moon settings =====
+    public int ofClouds = 0;
+    public float ofCloudsHeight = 0.0F;
+    public int ofTrees = 0;
+    public int ofRain = 0;
+    public int ofDroppedItems = 0;
+    public int ofBetterGrass = 3;
+    public int ofAutoSaveTicks = 4000;
+    public boolean ofLagometer = false;
+    public boolean ofProfiler = false;
+    public boolean ofShowFps = false;
+    public boolean ofWeather = true;
+    public boolean ofSky = true;
+    public boolean ofStars = true;
+    public boolean ofSunMoon = true;
+
+===== SOURCE LINES 1600-1603 | cloud render-distance gate =====
+    public int shouldRenderClouds()
+    {
+        return this.renderDistanceChunks >= 4 ? this.clouds : 0;
+    }
+

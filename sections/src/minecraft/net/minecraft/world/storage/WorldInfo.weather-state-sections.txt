@@ -1,0 +1,79 @@
+Extracted sections from: src\minecraft\net\minecraft\world\storage\WorldInfo.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 65-75 | serialized rain and thunder state fields =====
+    /** True if it's raining, false otherwise. */
+    private boolean raining;
+
+    /** Number of ticks until next rain. */
+    private int rainTime;
+
+    /** Is thunderbolts failing now? */
+    private boolean thundering;
+
+    /** Number of ticks untils next thunderbolt. */
+    private int thunderTime;
+
+===== SOURCE LINES 581-640 | rain/thunder state and timer accessors =====
+    public boolean isThundering()
+    {
+        return this.thundering;
+    }
+
+    /**
+     * Sets whether it is thundering or not.
+     */
+    public void setThundering(boolean thunderingIn)
+    {
+        this.thundering = thunderingIn;
+    }
+
+    /**
+     * Returns the number of ticks until next thunderbolt.
+     */
+    public int getThunderTime()
+    {
+        return this.thunderTime;
+    }
+
+    /**
+     * Defines the number of ticks until next thunderbolt.
+     */
+    public void setThunderTime(int time)
+    {
+        this.thunderTime = time;
+    }
+
+    /**
+     * Returns true if it is raining, false otherwise.
+     */
+    public boolean isRaining()
+    {
+        return this.raining;
+    }
+
+    /**
+     * Sets whether it is raining or not.
+     */
+    public void setRaining(boolean isRaining)
+    {
+        this.raining = isRaining;
+    }
+
+    /**
+     * Return the number of ticks until rain.
+     */
+    public int getRainTime()
+    {
+        return this.rainTime;
+    }
+
+    /**
+     * Sets the number of ticks until rain.
+     */
+    public void setRainTime(int time)
+    {
+        this.rainTime = time;
+    }
+

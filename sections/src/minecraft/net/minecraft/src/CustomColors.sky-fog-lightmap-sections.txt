@@ -1,0 +1,404 @@
+Extracted sections from: src\minecraft\net\minecraft\src\CustomColors.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 48-83 | custom sky/fog/lightmap color state =====
+public class CustomColors {
+	private static String paletteFormatDefault = "vanilla";
+	private static CustomColormap waterColors = null;
+	private static CustomColormap foliagePineColors = null;
+	private static CustomColormap foliageBirchColors = null;
+	private static CustomColormap swampFoliageColors = null;
+	private static CustomColormap swampGrassColors = null;
+	private static CustomColormap[] colorsBlockColormaps = null;
+	private static CustomColormap[][] blockColormaps = (CustomColormap[][]) null;
+	private static CustomColormap skyColors = null;
+	private static CustomColorFader skyColorFader = new CustomColorFader();
+	private static CustomColormap fogColors = null;
+	private static CustomColorFader fogColorFader = new CustomColorFader();
+	private static CustomColormap underwaterColors = null;
+	private static CustomColorFader underwaterColorFader = new CustomColorFader();
+	private static CustomColormap[] lightMapsColorsRgb = null;
+	private static int lightmapMinDimensionId = 0;
+	private static float[][] sunRgbs = new float[16][3];
+	private static float[][] torchRgbs = new float[16][3];
+	private static CustomColormap redstoneColors = null;
+	private static CustomColormap xpOrbColors = null;
+	private static int xpOrbTime = -1;
+	private static CustomColormap durabilityColors = null;
+	private static CustomColormap stemColors = null;
+	private static CustomColormap stemMelonColors = null;
+	private static CustomColormap stemPumpkinColors = null;
+	private static CustomColormap myceliumParticleColors = null;
+	private static boolean useDefaultGrassFoliageColors = true;
+	private static int particleWaterColor = -1;
+	private static int particlePortalColor = -1;
+	private static int lilyPadColor = -1;
+	private static int expBarTextColor = -1;
+	private static int bossTextColor = -1;
+	private static int signTextColor = -1;
+	private static Vec3d fogColorNether = null;
+	private static Vec3d fogColorEnd = null;
+
+===== SOURCE LINES 197-359 | custom colormap, fog and lightmap resource loading =====
+		String s = "mcpatcher/colormap/";
+		String[] astring = new String[] { "water.png", "watercolorX.png" };
+		waterColors = getCustomColors(s, astring, 256, 256);
+		updateUseDefaultGrassFoliageColors();
+
+		if (Config.isCustomColors()) {
+			String[] astring1 = new String[] { "pine.png", "pinecolor.png" };
+			foliagePineColors = getCustomColors(s, astring1, 256, 256);
+			String[] astring2 = new String[] { "birch.png", "birchcolor.png" };
+			foliageBirchColors = getCustomColors(s, astring2, 256, 256);
+			String[] astring3 = new String[] { "swampgrass.png", "swampgrasscolor.png" };
+			swampGrassColors = getCustomColors(s, astring3, 256, 256);
+			String[] astring4 = new String[] { "swampfoliage.png", "swampfoliagecolor.png" };
+			swampFoliageColors = getCustomColors(s, astring4, 256, 256);
+			String[] astring5 = new String[] { "sky0.png", "skycolor0.png" };
+			skyColors = getCustomColors(s, astring5, 256, 256);
+			String[] astring6 = new String[] { "fog0.png", "fogcolor0.png" };
+			fogColors = getCustomColors(s, astring6, 256, 256);
+			String[] astring7 = new String[] { "underwater.png", "underwatercolor.png" };
+			underwaterColors = getCustomColors(s, astring7, 256, 256);
+			String[] astring8 = new String[] { "redstone.png", "redstonecolor.png" };
+			redstoneColors = getCustomColors(s, astring8, 16, 1);
+			xpOrbColors = getCustomColors(s + "xporb.png", -1, -1);
+			durabilityColors = getCustomColors(s + "durability.png", -1, -1);
+			String[] astring9 = new String[] { "stem.png", "stemcolor.png" };
+			stemColors = getCustomColors(s, astring9, 8, 1);
+			stemPumpkinColors = getCustomColors(s + "pumpkinstem.png", 8, 1);
+			stemMelonColors = getCustomColors(s + "melonstem.png", 8, 1);
+			String[] astring10 = new String[] { "myceliumparticle.png", "myceliumparticlecolor.png" };
+			myceliumParticleColors = getCustomColors(s, astring10, -1, -1);
+			Pair<CustomColormap[], Integer> pair = parseLightmapsRgb();
+			lightMapsColorsRgb = pair.getLeft();
+			lightmapMinDimensionId = ((Integer) pair.getRight()).intValue();
+			readColorProperties("mcpatcher/color.properties");
+			blockColormaps = readBlockColormaps(new String[] { s + "custom/", s + "blocks/" }, colorsBlockColormaps,
+					256, 256);
+			updateUseDefaultGrassFoliageColors();
+		}
+	}
+
+	private static String getValidProperty(String p_getValidProperty_0_, String p_getValidProperty_1_,
+			String[] p_getValidProperty_2_, String p_getValidProperty_3_) {
+		try {
+			ResourceLocation resourcelocation = new ResourceLocation(p_getValidProperty_0_);
+			InputStream inputstream = Config.getResourceStream(resourcelocation);
+
+			if (inputstream == null) {
+				return p_getValidProperty_3_;
+			} else {
+				Properties properties = new Properties();
+				properties.load(inputstream);
+				inputstream.close();
+				String s = properties.getProperty(p_getValidProperty_1_);
+
+				if (s == null) {
+					return p_getValidProperty_3_;
+				} else {
+					List<String> list = Arrays.<String>asList(p_getValidProperty_2_);
+
+					if (!list.contains(s)) {
+						warn("Invalid value: " + p_getValidProperty_1_ + "=" + s);
+						warn("Expected values: " + Config.arrayToString((Object[]) p_getValidProperty_2_));
+						return p_getValidProperty_3_;
+					} else {
+						dbg("" + p_getValidProperty_1_ + "=" + s);
+						return s;
+					}
+				}
+			}
+		} catch (FileNotFoundException var9) {
+			return p_getValidProperty_3_;
+		} catch (IOException ioexception) {
+			ioexception.printStackTrace();
+			return p_getValidProperty_3_;
+		}
+	}
+
+	private static Pair<CustomColormap[], Integer> parseLightmapsRgb() {
+		String s = "mcpatcher/lightmap/world";
+		String s1 = ".png";
+		String[] astring = ResUtils.collectFiles(s, s1);
+		Map<Integer, String> map = new HashMap<Integer, String>();
+
+		for (int i = 0; i < astring.length; ++i) {
+			String s2 = astring[i];
+			String s3 = StrUtils.removePrefixSuffix(s2, s, s1);
+			int j = Config.parseInt(s3, Integer.MIN_VALUE);
+
+			if (j == Integer.MIN_VALUE) {
+				warn("Invalid dimension ID: " + s3 + ", path: " + s2);
+			} else {
+				map.put(Integer.valueOf(j), s2);
+			}
+		}
+
+		Set<Integer> set = map.keySet();
+		Integer[] ainteger = (Integer[]) set.toArray(new Integer[set.size()]);
+		Arrays.sort((Object[]) ainteger);
+
+		if (ainteger.length <= 0) {
+			return new ImmutablePair<CustomColormap[], Integer>((CustomColormap[]) null, Integer.valueOf(0));
+		} else {
+			int j1 = ainteger[0].intValue();
+			int k1 = ainteger[ainteger.length - 1].intValue();
+			int k = k1 - j1 + 1;
+			CustomColormap[] acustomcolormap = new CustomColormap[k];
+
+			for (int l = 0; l < ainteger.length; ++l) {
+				Integer integer = ainteger[l];
+				String s4 = map.get(integer);
+				CustomColormap customcolormap = getCustomColors(s4, -1, -1);
+
+				if (customcolormap != null) {
+					if (customcolormap.getWidth() < 16) {
+						warn("Invalid lightmap width: " + customcolormap.getWidth() + ", path: " + s4);
+					} else {
+						int i1 = integer.intValue() - j1;
+						acustomcolormap[i1] = customcolormap;
+					}
+				}
+			}
+
+			return new ImmutablePair<CustomColormap[], Integer>(acustomcolormap, j1);
+		}
+	}
+
+	private static int getTextureHeight(String p_getTextureHeight_0_, int p_getTextureHeight_1_) {
+		try {
+			InputStream inputstream = Config.getResourceStream(new ResourceLocation(p_getTextureHeight_0_));
+
+			if (inputstream == null) {
+				return p_getTextureHeight_1_;
+			} else {
+				BufferedImage bufferedimage = ImageIO.read(inputstream);
+				inputstream.close();
+				return bufferedimage == null ? p_getTextureHeight_1_ : bufferedimage.getHeight();
+			}
+		} catch (IOException var4) {
+			return p_getTextureHeight_1_;
+		}
+	}
+
+	private static void readColorProperties(String p_readColorProperties_0_) {
+		try {
+			ResourceLocation resourcelocation = new ResourceLocation(p_readColorProperties_0_);
+			InputStream inputstream = Config.getResourceStream(resourcelocation);
+
+			if (inputstream == null) {
+				return;
+			}
+
+			dbg("Loading " + p_readColorProperties_0_);
+			Properties properties = new Properties();
+			properties.load(inputstream);
+			inputstream.close();
+			particleWaterColor = readColor(properties, new String[] { "particle.water", "drop.water" });
+			particlePortalColor = readColor(properties, "particle.portal");
+			lilyPadColor = readColor(properties, "lilypad");
+			expBarTextColor = readColor(properties, "text.xpbar");
+			bossTextColor = readColor(properties, "text.boss");
+			signTextColor = readColor(properties, "text.sign");
+			fogColorNether = readColorVec3(properties, "fog.nether");
+			fogColorEnd = readColorVec3(properties, "fog.end");
+
+===== SOURCE LINES 985-1026 | custom sky and fog color sampling =====
+	public static Vec3d getSkyColor(Vec3d p_getSkyColor_0_, IBlockAccess p_getSkyColor_1_, double p_getSkyColor_2_,
+			double p_getSkyColor_4_, double p_getSkyColor_6_) {
+		if (skyColors == null) {
+			return p_getSkyColor_0_;
+		} else {
+			int i = skyColors.getColorSmooth(p_getSkyColor_1_, p_getSkyColor_2_, p_getSkyColor_4_, p_getSkyColor_6_, 3);
+			int j = i >> 16 & 255;
+			int k = i >> 8 & 255;
+			int l = i & 255;
+			float f = (float) j / 255.0F;
+			float f1 = (float) k / 255.0F;
+			float f2 = (float) l / 255.0F;
+			float f3 = (float) p_getSkyColor_0_.x / 0.5F;
+			float f4 = (float) p_getSkyColor_0_.y / 0.66275F;
+			float f5 = (float) p_getSkyColor_0_.z;
+			f = f * f3;
+			f1 = f1 * f4;
+			f2 = f2 * f5;
+			Vec3d vec3d = skyColorFader.getColor((double) f, (double) f1, (double) f2);
+			return vec3d;
+		}
+	}
+
+	private static Vec3d getFogColor(Vec3d p_getFogColor_0_, IBlockAccess p_getFogColor_1_, double p_getFogColor_2_,
+			double p_getFogColor_4_, double p_getFogColor_6_) {
+		if (fogColors == null) {
+			return p_getFogColor_0_;
+		} else {
+			int i = fogColors.getColorSmooth(p_getFogColor_1_, p_getFogColor_2_, p_getFogColor_4_, p_getFogColor_6_, 3);
+			int j = i >> 16 & 255;
+			int k = i >> 8 & 255;
+			int l = i & 255;
+			float f = (float) j / 255.0F;
+			float f1 = (float) k / 255.0F;
+			float f2 = (float) l / 255.0F;
+			float f3 = (float) p_getFogColor_0_.x / 0.753F;
+			float f4 = (float) p_getFogColor_0_.y / 0.8471F;
+			float f5 = (float) p_getFogColor_0_.z;
+			f = f * f3;
+			f1 = f1 * f4;
+			f2 = f2 * f5;
+			Vec3d vec3d = fogColorFader.getColor((double) f, (double) f1, (double) f2);
+
+===== SOURCE LINES 1070-1179 | custom lightmap generation =====
+	public static boolean updateLightmap(World p_updateLightmap_0_, float p_updateLightmap_1_,
+			int[] p_updateLightmap_2_, boolean p_updateLightmap_3_) {
+		if (p_updateLightmap_0_ == null) {
+			return false;
+		} else if (lightMapsColorsRgb == null) {
+			return false;
+		} else {
+			int i = p_updateLightmap_0_.provider.getDimensionType().getId();
+			int j = i - lightmapMinDimensionId;
+
+			if (j >= 0 && j < lightMapsColorsRgb.length) {
+				CustomColormap customcolormap = lightMapsColorsRgb[j];
+
+				if (customcolormap == null) {
+					return false;
+				} else {
+					int k = customcolormap.getHeight();
+
+					if (p_updateLightmap_3_ && k < 64) {
+						return false;
+					} else {
+						int l = customcolormap.getWidth();
+
+						if (l < 16) {
+							warn("Invalid lightmap width: " + l + " for dimension: " + i);
+							lightMapsColorsRgb[j] = null;
+							return false;
+						} else {
+							int i1 = 0;
+
+							if (p_updateLightmap_3_) {
+								i1 = l * 16 * 2;
+							}
+
+							float f = 1.1666666F * (p_updateLightmap_0_.getSunBrightness(1.0F) - 0.2F);
+
+							if (p_updateLightmap_0_.getLastLightningBolt() > 0) {
+								f = 1.0F;
+							}
+
+							f = Config.limitTo1(f);
+							float f1 = f * (float) (l - 1);
+							float f2 = Config.limitTo1(p_updateLightmap_1_ + 0.5F) * (float) (l - 1);
+							float f3 = Config.limitTo1(Config.getGameSettings().gammaSetting);
+							boolean flag = f3 > 1.0E-4F;
+							float[][] afloat = customcolormap.getColorsRgb();
+							getLightMapColumn(afloat, f1, i1, l, sunRgbs);
+							getLightMapColumn(afloat, f2, i1 + 16 * l, l, torchRgbs);
+							float[] afloat1 = new float[3];
+
+							for (int j1 = 0; j1 < 16; ++j1) {
+								for (int k1 = 0; k1 < 16; ++k1) {
+									for (int l1 = 0; l1 < 3; ++l1) {
+										float f4 = Config.limitTo1(sunRgbs[j1][l1] + torchRgbs[k1][l1]);
+
+										if (flag) {
+											float f5 = 1.0F - f4;
+											f5 = 1.0F - f5 * f5 * f5 * f5;
+											f4 = f3 * f5 + (1.0F - f3) * f4;
+										}
+
+										afloat1[l1] = f4;
+									}
+
+									int i2 = (int) (afloat1[0] * 255.0F);
+									int j2 = (int) (afloat1[1] * 255.0F);
+									int k2 = (int) (afloat1[2] * 255.0F);
+									p_updateLightmap_2_[j1 * 16 + k1] = -16777216 | i2 << 16 | j2 << 8 | k2;
+								}
+							}
+
+							return true;
+						}
+					}
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+
+	private static void getLightMapColumn(float[][] p_getLightMapColumn_0_, float p_getLightMapColumn_1_,
+			int p_getLightMapColumn_2_, int p_getLightMapColumn_3_, float[][] p_getLightMapColumn_4_) {
+		int i = (int) Math.floor((double) p_getLightMapColumn_1_);
+		int j = (int) Math.ceil((double) p_getLightMapColumn_1_);
+
+		if (i == j) {
+			for (int i1 = 0; i1 < 16; ++i1) {
+				float[] afloat3 = p_getLightMapColumn_0_[p_getLightMapColumn_2_ + i1 * p_getLightMapColumn_3_ + i];
+				float[] afloat4 = p_getLightMapColumn_4_[i1];
+
+				for (int j1 = 0; j1 < 3; ++j1) {
+					afloat4[j1] = afloat3[j1];
+				}
+			}
+		} else {
+			float f = 1.0F - (p_getLightMapColumn_1_ - (float) i);
+			float f1 = 1.0F - ((float) j - p_getLightMapColumn_1_);
+
+			for (int k = 0; k < 16; ++k) {
+				float[] afloat = p_getLightMapColumn_0_[p_getLightMapColumn_2_ + k * p_getLightMapColumn_3_ + i];
+				float[] afloat1 = p_getLightMapColumn_0_[p_getLightMapColumn_2_ + k * p_getLightMapColumn_3_ + j];
+				float[] afloat2 = p_getLightMapColumn_4_[k];
+
+				for (int l = 0; l < 3; ++l) {
+					afloat2[l] = afloat[l] * f + afloat1[l] * f1;
+				}
+			}
+		}
+	}
+
+===== SOURCE LINES 1181-1219 | world fog and sky color wrappers =====
+	public static Vec3d getWorldFogColor(Vec3d p_getWorldFogColor_0_, World p_getWorldFogColor_1_,
+			Entity p_getWorldFogColor_2_, float p_getWorldFogColor_3_) {
+		DimensionType dimensiontype = p_getWorldFogColor_1_.provider.getDimensionType();
+
+		switch (dimensiontype) {
+		case NETHER:
+			p_getWorldFogColor_0_ = getFogColorNether(p_getWorldFogColor_0_);
+			break;
+
+		case OVERWORLD:
+			Minecraft minecraft = Minecraft.getMinecraft();
+			p_getWorldFogColor_0_ = getFogColor(p_getWorldFogColor_0_, minecraft.world, p_getWorldFogColor_2_.posX,
+					p_getWorldFogColor_2_.posY + 1.0D, p_getWorldFogColor_2_.posZ);
+			break;
+
+		case THE_END:
+			p_getWorldFogColor_0_ = getFogColorEnd(p_getWorldFogColor_0_);
+		}
+
+		return p_getWorldFogColor_0_;
+	}
+
+	public static Vec3d getWorldSkyColor(Vec3d p_getWorldSkyColor_0_, World p_getWorldSkyColor_1_,
+			Entity p_getWorldSkyColor_2_, float p_getWorldSkyColor_3_) {
+		DimensionType dimensiontype = p_getWorldSkyColor_1_.provider.getDimensionType();
+
+		switch (dimensiontype) {
+		case OVERWORLD:
+			Minecraft minecraft = Minecraft.getMinecraft();
+			p_getWorldSkyColor_0_ = getSkyColor(p_getWorldSkyColor_0_, minecraft.world, p_getWorldSkyColor_2_.posX,
+					p_getWorldSkyColor_2_.posY + 1.0D, p_getWorldSkyColor_2_.posZ);
+			break;
+
+		case THE_END:
+			p_getWorldSkyColor_0_ = getSkyColorEnd(p_getWorldSkyColor_0_);
+		}
+
+		return p_getWorldSkyColor_0_;
+	}
+

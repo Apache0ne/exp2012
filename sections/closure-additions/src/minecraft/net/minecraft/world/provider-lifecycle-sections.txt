@@ -1,0 +1,89 @@
+Captioned closure additions
+These source excerpts preserve the original code without line-number prefixes.
+Each snippet states its input, output/state changes, consumers, and reason for inclusion.
+
+=== SNIPPET 1 ===
+NAME: Base provider initialization
+SOURCE: src\minecraft\net\minecraft\world\WorldProvider.java
+SOURCE LINES: 84-115 inclusive
+GOES TO: WorldProvider.init() and createChunkGenerator()
+INPUT: WorldInfo terrain type and generator options
+OUTPUT / STATE CHANGES: Biome provider and default chunk generator selected
+CONSUMERS: WorldProvider.setWorld and world construction
+WHY INCLUDED: The original provider export contained setWorld but not the lifecycle methods it invokes.
+--- SOURCE TEXT (preserved) ---
+    protected void init()
+    {
+        this.hasSkyLight = true;
+        WorldType worldtype = this.world.getWorldInfo().getTerrainType();
+
+        if (worldtype == WorldType.FLAT)
+        {
+            FlatGeneratorInfo flatgeneratorinfo = FlatGeneratorInfo.createFlatGeneratorFromString(this.world.getWorldInfo().getGeneratorOptions());
+            this.biomeProvider = new BiomeProviderSingle(Biome.getBiome(flatgeneratorinfo.getBiome(), Biomes.DEFAULT));
+        }
+        else if (worldtype == WorldType.DEBUG_ALL_BLOCK_STATES)
+        {
+            this.biomeProvider = new BiomeProviderSingle(Biomes.PLAINS);
+        }
+        else
+        {
+            this.biomeProvider = new BiomeProvider(this.world.getWorldInfo());
+        }
+    }
+
+    public IChunkGenerator createChunkGenerator()
+    {
+        if (this.terrainType == WorldType.FLAT)
+        {
+            return new ChunkGeneratorFlat(this.world, this.world.getSeed(), this.world.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings);
+        }
+        else if (this.terrainType == WorldType.DEBUG_ALL_BLOCK_STATES)
+        {
+            return new ChunkGeneratorDebug(this.world);
+        }
+        else
+        {
+--- END SNIPPET 1 ---
+
+=== SNIPPET 2 ===
+NAME: Nether provider initialization
+SOURCE: src\minecraft\net\minecraft\world\WorldProviderHell.java
+SOURCE LINES: 18-23 inclusive
+GOES TO: WorldProviderHell.init()
+INPUT: Nether world
+OUTPUT / STATE CHANGES: HELL biome provider, vaporization, and Nether flag
+CONSUMERS: WorldProviderHell sky/fog/light behavior
+WHY INCLUDED: The previous range started after this initializer.
+--- SOURCE TEXT (preserved) ---
+    public void init()
+    {
+        this.biomeProvider = new BiomeProviderSingle(Biomes.HELL);
+        this.doesWaterVaporize = true;
+        this.nether = true;
+    }
+--- END SNIPPET 2 ---
+
+=== SNIPPET 3 ===
+NAME: End provider initialization and generator
+SOURCE: src\minecraft\net\minecraft\world\WorldProviderEnd.java
+SOURCE LINES: 24-34 inclusive
+GOES TO: WorldProviderEnd.init() and createChunkGenerator()
+INPUT: End world, dimension data, seed, spawn coordinate
+OUTPUT / STATE CHANGES: SKY biome provider, dragon-fight state, and End generator
+CONSUMERS: DimensionType and RenderGlobal End sky path
+WHY INCLUDED: The previous range started at the celestial method and omitted provider setup.
+--- SOURCE TEXT (preserved) ---
+    public void init()
+    {
+        this.biomeProvider = new BiomeProviderSingle(Biomes.SKY);
+        NBTTagCompound nbttagcompound = this.world.getWorldInfo().getDimensionData(DimensionType.THE_END);
+        this.dragonFightManager = this.world instanceof WorldServer ? new DragonFightManager((WorldServer)this.world, nbttagcompound.getCompoundTag("DragonFight")) : null;
+    }
+
+    public IChunkGenerator createChunkGenerator()
+    {
+        return new ChunkGeneratorEnd(this.world, this.world.getWorldInfo().isMapFeaturesEnabled(), this.world.getSeed(), this.getSpawnCoordinate());
+    }
+--- END SNIPPET 3 ---
+

@@ -1,0 +1,37 @@
+Sky / cloud / weather / light closure audit after additions
+=========================================================
+
+Source checkout: D:\voxelworldshadersoruces\mcp940
+Target bundle: D:\voxelworldshadersoruces\needed files copied here
+Audit type: read-only static/source audit; no Minecraft process, compiler, or renderer was run.
+
+COPY INTEGRITY
+--------------
+Whole-file manifest records: 36
+Section manifest records: 40
+Whole-file SHA256 matches: PASS
+Required closure full-file presence: PASS
+Captioned snippet fields: PASS (25 snippets)
+
+FUNCTIONAL PATHS
+----------------
+PASS - Vanilla sky: RenderGlobal sky geometry/sun/moon/stars plus World/WorldProvider inputs and environment textures are present.
+PASS - Vanilla clouds/weather: fast/fancy clouds, cloud height/colour, rain/snow draw path, weather state, and six environment textures are present.
+PASS - SKY/BLOCK storage: EnumSkyBlock, ExtendedBlockStorage, NibbleArray, Chunk propagation, Block registry light values, and World relight triggers are present.
+PASS - Client light path: EntityRenderer lightmap state, WorldClient combined-light override, ChunkCache, ChunkCacheOF, and RenderChunk cache entry are present.
+PASS - Dimension setup: DimensionType, surface/Nether/End providers, provider lifecycle, and End biome override are present.
+PASS - ShaderMod Java runtime: full Shaders.java and ShadersRender.java are now present; the earlier hook-only limitation is removed.
+
+REMAINING HOST/RESOURCE BOUNDARIES
+---------------------------------
+BOUNDARY - The bundle remains a focused source-closure reference, not a standalone Minecraft build. RenderGlobal, EntityRenderer, World, Chunk, Block, Config, CustomColors, GameSettings, and generic renderer/entity/OpenGL/resource classes are represented by exact sections and still resolve from the host MCP source.
+BOUNDARY - OptiFine custom sky/colormap/lightmap resources are not in mcp940 source assets.
+Custom resource filename matches found: 0
+BOUNDARY - External ShaderMod shader-pack GLSL is not in mcp940; assets/minecraft/shaders contains vanilla post/program assets only.
+External shader-pack GLSL files found: 0
+
+READINESS
+---------
+READY FOR SOURCE-LEVEL REWRITE: yes, for the identified vanilla/OptiFine/ShaderMod Java behavior, with mcp940 supplying the generic host classes.
+STANDALONE JAVA COMPILE/RUN FROM THIS FOLDER: no claim; the section extracts are intentionally study files and external shader/resource inputs are absent.
+No source checkout files were edited by this audit.

@@ -1,0 +1,48 @@
+Sky / cloud / weather / light closure additions
+================================================
+
+The files below were copied from D:\voxelworldshadersoruces\mcp940 without source edits.
+Whole files are byte-for-byte copies. Section files preserve exact inclusive source ranges.
+Every section snippet is captioned with GOES TO, INPUT, OUTPUT / STATE CHANGES, CONSUMERS, and WHY INCLUDED.
+
+FULL FILE ADDITIONS
+-------------------
+src\minecraft\net\minecraft\world\WorldProvider.java | Purpose: Complete provider lifecycle and default sky/light behavior | Input: World, WorldInfo, terrain type, world time | Output: Initialized biome provider, sky-light capability, brightness table, celestial/fog/cloud values | Consumers: World, RenderGlobal, EntityRenderer, dimension selection
+src\minecraft\net\minecraft\world\WorldProviderHell.java | Purpose: Complete Nether provider initialization and dimension behavior | Input: Nether world and world seed | Output: Nether biome provider, no-surface-sky behavior, Nether brightness/fog/celestial values | Consumers: DimensionType, RenderGlobal, EntityRenderer
+src\minecraft\net\minecraft\world\WorldProviderEnd.java | Purpose: Complete End provider initialization and dimension behavior | Input: End world, dimension NBT, world seed | Output: End biome provider, End sky/fog/cloud behavior, End generator setup | Consumers: DimensionType, RenderGlobal.renderSkyEnd, EntityRenderer
+src\minecraft\net\minecraft\world\WorldProviderSurface.java | Purpose: Overworld provider selection | Input: World provider lookup | Output: DimensionType.OVERWORLD and surface-world identity | Consumers: DimensionType, RenderGlobal.renderSky
+src\minecraft\net\minecraft\world\DimensionType.java | Purpose: Dimension-to-provider registry and provider construction | Input: Dimension id and provider class | Output: OVERWORLD, NETHER, and THE_END provider instances | Consumers: WorldClient, world construction, RenderGlobal
+src\minecraft\net\minecraft\world\chunk\NibbleArray.java | Purpose: 4-bit light storage backing | Input: 2048-byte nibble storage and x/y/z coordinates | Output: Read/write light values 0-15 | Consumers: ExtendedBlockStorage SKY/BLOCK arrays
+src\minecraft\net\minecraft\world\chunk\EmptyChunk.java | Purpose: Safe unloaded/empty chunk light fallback | Input: Light-channel queries for an empty chunk | Output: Default air state and default SKY/BLOCK light values | Consumers: Chunk providers and render/cache queries
+src\minecraft\net\minecraft\world\IBlockAccess.java | Purpose: Block-render light-query contract | Input: Block positions and light defaults | Output: Combined light, block state, tile/entity access interface | Consumers: ChunkCache, ChunkCacheOF, block renderers
+src\minecraft\net\minecraft\client\multiplayer\WorldClient.java | Purpose: Client world tick and OptiFine dynamic-light override | Input: Server weather/time state and loaded entities | Output: Client time progression and DynamicLights-adjusted combined light | Consumers: EntityRenderer, RenderChunk, block rendering
+src\minecraft\net\minecraft\world\ChunkCache.java | Purpose: Region light cache used by block rendering | Input: World and region bounds | Output: Cached SKY/BLOCK/combined light queries | Consumers: RenderChunk and ChunkCacheOF
+src\minecraft\net\minecraft\src\ChunkCacheOF.java | Purpose: OptiFine cached dynamic-light overlay | Input: ChunkCache light plus dynamic entities | Output: DynamicLights-adjusted combined light with cache invalidation | Consumers: RenderChunk block rebuilds
+src\minecraft\net\minecraft\world\biome\BiomeEnd.java | Purpose: End biome sky-color override | Input: End biome temperature query | Output: Black End sky color | Consumers: World.getSkyColor and End visual correctness
+src\minecraft\net\minecraft\world\storage\WorldInfo.java | Purpose: Complete serialized weather/time state | Input: World metadata and weather timers | Output: Rain/thunder flags, timers, world time, dimension data | Consumers: World.updateWeather, WorldServer.tick, WorldProvider
+src\minecraft\net\minecraft\src\CustomColormap.java | Purpose: OptiFine custom color-map sampling | Input: Palette image/resource properties and biome position | Output: ARGB/RGB sampled colors | Consumers: CustomColors sky/fog/lightmap paths
+src\minecraft\net\minecraft\src\CustomColorFader.java | Purpose: OptiFine smooth sky/fog color transitions | Input: Target RGB color and elapsed transition | Output: Faded Vec3d color | Consumers: CustomColors sky/fog wrappers
+src\minecraft\net\minecraft\src\ResUtils.java | Purpose: OptiFine resource-pack enumeration | Input: Resource prefixes and pack managers | Output: Matching resource paths/streams | Consumers: CustomColors, CustomSky, TextureUtils
+src\minecraft\net\minecraft\src\TextureUtils.java | Purpose: OptiFine texture loading and texture metadata helpers | Input: Resource locations and texture manager | Output: Loaded textures and texture dimensions | Consumers: CustomSky, CustomSkyLayer, CustomColors
+src\minecraft\net\minecraft\src\PropertiesOrdered.java | Purpose: OptiFine ordered property parsing | Input: Properties text | Output: Deterministically ordered property values | Consumers: CustomColors and shader configuration
+src\minecraft\net\minecraft\src\MatchBlock.java | Purpose: OptiFine block matching for color maps | Input: Block ids/properties and block state | Output: Whether a colormap applies to a block | Consumers: CustomColors block/light color selection
+src\minecraft\net\minecraft\src\Reflector.java | Purpose: Optional Forge/OptiFine integration gates | Input: Reflection targets and runtime classes | Output: Feature-present checks and reflective calls | Consumers: RenderGlobal, EntityRenderer, Config, ChunkCacheOF
+src\minecraft\shadersmod\client\Shaders.java | Purpose: ShaderMod bootstrap, shader-pack loading, program switching, uniforms, and teardown | Input: Minecraft renderer, shader-pack resources, world/camera state | Output: Loaded shader programs, sky/cloud/weather/lightmap/shadow hooks | Consumers: RenderGlobal, EntityRenderer, ShadersRender
+src\minecraft\shadersmod\client\ShadersRender.java | Purpose: ShaderMod terrain, shadow, translucent, hand, and overlay render support | Input: Minecraft render queues and Shaders program state | Output: Shadow map and render-pass geometry | Consumers: RenderGlobal, EntityRenderer, Shaders
+
+CAPTIONED SECTION ADDITIONS
+----------------------------
+sections\closure-additions\src\minecraft\net\minecraft\block\Block.light-registration-sections.txt
+  Block registry values plus subclass opacity/emission overrides.
+sections\closure-additions\src\minecraft\net\minecraft\world\World.light-update-sections.txt
+  Block replacement relight triggers, vertical skylight invalidation, relight queue, and server skylight tick.
+sections\closure-additions\src\minecraft\net\minecraft\client\renderer\runtime-initialization-sections.txt
+  RenderGlobal, EntityRenderer, and RenderChunk state/cache initialization.
+sections\closure-additions\src\minecraft\net\minecraft\world\provider-lifecycle-sections.txt
+  Base, Nether, and End provider lifecycle methods that were outside the original excerpts.
+
+SCOPE NOTE
+----------
+This is a focused source-closure bundle, not a replacement for the complete Minecraft 1.12 client/server source tree.
+Generic renderer, entity, OpenGL, resource-manager, and world-generation classes remain host dependencies in mcp940.
+External OptiFine custom sky/color resources and external ShaderMod shader-pack GLSL are not present in mcp940.
