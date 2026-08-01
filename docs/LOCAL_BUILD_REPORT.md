@@ -2,7 +2,9 @@
 
 **Status: PASS**
 
-The final verification used the complete supplied archive on the ChatGPT CPU runtime. GitHub Actions were not used.
+The verification used the complete supplied archive on the ChatGPT CPU runtime. GitHub Actions were not used.
+
+## Complete build
 
 - Manifest rows validated: 295
 - Files SHA-256 checked: 295
@@ -26,4 +28,15 @@ The final verification used the complete supplied archive on the ChatGPT CPU run
 - Final archive verification: PASS
 - Final CPU render: PASS
 
-The archived Minecraft/OptiFine/ShaderMod source remains byte-preserved. The runnable JAR is the builder, verifier, generated-section index, and headless CPU reference renderer. The supplied source audit still identifies 269 external host-boundary classes, so this report does not mislabel the partial export as a complete Minecraft client.
+## Main-branch repair test
+
+The expanded host tree was deliberately removed from a clean local copy to reproduce the incomplete browser upload. The new `tools/materialize_source.py` workflow then:
+
+- reconstructed the canonical archive;
+- restored exactly 108 files under `glue/full-files/host/src/minecraft/`;
+- validated 295 manifest rows and 295 SHA-256 values after copying;
+- passed `python tools/materialize_source.py --check`;
+- completed the compiler, verifier, and six CPU renders;
+- reproduced the same JAR SHA-256: `d5a669f06e220601bf15db0de068635f3eaf97018d614d921f4a4cb6660193f5`.
+
+The archived Minecraft, OptiFine, and ShaderMod source remains byte-preserved. The runnable JAR is the builder, verifier, generated-section index, and headless CPU reference renderer. The supplied source audit still identifies 269 external host-boundary classes, so this report does not mislabel the partial export as a complete Minecraft client.
