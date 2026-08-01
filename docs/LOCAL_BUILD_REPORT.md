@@ -18,8 +18,9 @@ The final verification used the complete supplied archive on the ChatGPT CPU run
 - Builder/generated Java sources compiled: 31
 - Compiler: OpenJDK `javac 21.0.10`
 - Compiler target: Java 8 (`--release 8`)
-- Builder JAR bytes: 177,058
-- Builder JAR SHA-256: `91ea4e3cee542010b6e3b905b1e6476d626d3d6970b6b8bc56eb3c0e36380b8f`
+- Reproducible builder JAR bytes: 176,979
+- Reproducible builder JAR SHA-256: `d5a669f06e220601bf15db0de068635f3eaf97018d614d921f4a4cb6660193f5`
+- Consecutive clean-build JAR hashes matched: PASS
 - CPU-rendered PNGs validated: 6
 - Final compiler result: PASS
 - Final archive verification: PASS
