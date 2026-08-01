@@ -41,6 +41,13 @@ def safe_target(root: Path, name: str) -> Path:
 
 
 def prepare_archive() -> Path:
+    # A complete expanded export may live directly in the repository root.
+    # Prefer it so a materialized checkout builds without decoding the archive again.
+    if (ROOT / "manifest.tsv").is_file() and (ROOT / "glue" / "manifest.tsv").is_file():
+        host = ROOT / "glue" / "full-files" / "host" / "src" / "minecraft"
+        if (ROOT / "full-files").is_dir() and (ROOT / "sections").is_dir() and host.is_dir():
+            return ROOT
+
     extracted = ROOT / "source-export"
     if extracted.is_dir():
         return extracted
