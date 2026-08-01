@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "duration_seconds": 1.844,
+  "archive": {
+    "manifest_rows": 295,
+    "hash_checked_files": 295,
+    "optional_external_binaries_skipped": 0,
+    "raw_java_files": 138,
+    "raw_text_files": 51
+  },
+  "assembly": {
+    "host_files": 108,
+    "focused_files": 37,
+    "focused_overrides": 15,
+    "unique_java_files": 123
+  },
+  "generated_sections": {
+    "classes": 26,
+    "code_sections": 129
+  },
+  "compiler": {
+    "javac": "javac 21.0.10",
+    "java": "openjdk version \"21.0.10\" 2026-01-20",
+    "target_release": 8,
+    "compiled_sources": 31
+  },
+  "jar": {
+    "path": "build/exp2012-builder.jar",
+    "bytes": 169758,
+    "sha256": "d5a669f06e220601bf15db0de068635f3eaf97018d614d921f4a4cb6660193f5"
+  },
+  "verification_stdout": "Manifest rows: 295\nHash-checked files: 295\nArchived Java files: 138\nCanonical section files: 26\nGenerated section classes: 26\nArchive verification: PASS\n",
+  "render_stdout": "Rendered six PNG files with the headless Java2D CPU renderer.\nCPU render: PASS\n",
+  "images": [
+    {
+      "path": "showcase/contact_sheet.png",
+      "width": 1204,
+      "height": 1057,
+      "bytes": 571812,
+      "sha256": "28d7479b5c0bdf4de02146289f4ee3f85aca40af022693c322c3acde248ef2a8"
+    },
+    {
+      "path": "showcase/end_skybox.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 588017,
+      "sha256": "16a23e2f0c6df55f74ddd2c6e045d20310dbb6824723d8782fa9818a095ec245"
+    },
+    {
+      "path": "showcase/overworld_day.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 122775,
+      "sha256": "bacda5c42295240f581e935acf262f7394ca683205714b23f796ffb8ee97c36b"
+    },
+    {
+      "path": "showcase/overworld_night.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 141029,
+      "sha256": "1bf9fcf299704373de143f56c3351c692de3d995552fec8bd96525d9ba1b7952"
+    },
+    {
+      "path": "showcase/overworld_rain.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 203790,
+      "sha256": "bf4d49b4bcf8de2c1734d3767a76ac4229f29381f72bb51f87a9aa665148c27a"
+    },
+    {
+      "path": "showcase/overworld_sunset.png",
+      "width": 1280,
+      "height": 720,
+      "bytes": 454608,
+      "sha256": "d2227e029221b7dbdc31031a4c08981be86c0a629c22cd93f5175f24a16e9956"
+    }
+  ]
+}
