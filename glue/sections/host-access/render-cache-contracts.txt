@@ -1,0 +1,135 @@
+HOST DEPENDENCY GLUE: RenderGlobal, RenderChunk and CompiledChunk cache access
+This file contains exact source lines from mcp940. Captions describe the contract at the host boundary.
+The source text is unchanged; only the surrounding captions are added.
+
+===== RenderGlobal block-range invalidation =====
+NAME: RenderGlobal block-range invalidation
+SOURCE: src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SOURCE LINES: 2802-2808
+GOES TO: Client render rebuild scheduling
+INPUT: Changed block coordinate range
+OUTPUT / STATE CHANGES: Expanded range marked for render update
+CONSUMERS: World light updates and DynamicLight
+WHY INCLUDED: Light changes must reach the client render cache through this host method.
+SOURCE RANGE SHA256: 2A9D887EC92F70E172DFA5C8043643CE2421B6DBAAADDCEEB9C3B8B508122120
+BEGIN EXACT SOURCE
+    /**
+     * On the client, re-renders all blocks in this range, inclusive. On the server, does nothing.
+     */
+    public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2)
+    {
+        this.markBlocksForUpdate(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1, false);
+    }
+END EXACT SOURCE
+
+===== RenderGlobal render-chunk/world access =====
+NAME: RenderGlobal render-chunk/world access
+SOURCE: src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SOURCE LINES: 3518-3526
+GOES TO: RenderChunk lookup and client World
+INPUT: BlockPos and RenderGlobal
+OUTPUT / STATE CHANGES: RenderChunk and WorldClient references
+CONSUMERS: DynamicLight
+WHY INCLUDED: Dynamic lights invalidate nearby render chunks through RenderGlobal.
+SOURCE RANGE SHA256: A32BFA544CE01664AAB1486B43455A62C13ECC31EFEE584A05C1335D7224E8E3
+BEGIN EXACT SOURCE
+    public RenderChunk getRenderChunk(BlockPos p_getRenderChunk_1_)
+    {
+        return this.viewFrustum.getRenderChunk(p_getRenderChunk_1_);
+    }
+
+    public WorldClient getWorld()
+    {
+        return this.world;
+    }
+END EXACT SOURCE
+
+===== RenderChunk compiled-chunk access =====
+NAME: RenderChunk compiled-chunk access
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SOURCE LINES: 448-451
+GOES TO: Compiled geometry state
+INPUT: RenderChunk
+OUTPUT / STATE CHANGES: CompiledChunk reference
+CONSUMERS: DynamicLight
+WHY INCLUDED: The light invalidation path avoids updating empty compiled chunks.
+SOURCE RANGE SHA256: F5DE30F39AB53BAB5E6BCA7B141AD57080E60D2DAD4B62BB00F3DC761D5D60A7
+BEGIN EXACT SOURCE
+    public CompiledChunk getCompiledChunk()
+    {
+        return this.compiledChunk;
+    }
+END EXACT SOURCE
+
+===== RenderChunk position/update access =====
+NAME: RenderChunk position/update access
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SOURCE LINES: 487-500
+GOES TO: Render-cache position and dirty state
+INPUT: RenderChunk and immediate flag
+OUTPUT / STATE CHANGES: BlockPos and needsUpdate state
+CONSUMERS: DynamicLight
+WHY INCLUDED: Dynamic light changes mark exact render chunks dirty.
+SOURCE RANGE SHA256: 7EB4CEB1071A6B45CC6B36B9AD518256E347E18E64F443B7994C98FA41C4565A
+BEGIN EXACT SOURCE
+    public BlockPos getPosition()
+    {
+        return this.position;
+    }
+
+    public void setNeedsUpdate(boolean immediate)
+    {
+        if (this.needsUpdate)
+        {
+            immediate |= this.needsImmediateUpdate;
+        }
+
+        this.needsUpdate = true;
+        this.needsImmediateUpdate = immediate;
+END EXACT SOURCE
+
+===== RenderChunk neighbor offset =====
+NAME: RenderChunk neighbor offset
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SOURCE LINES: 525-533
+GOES TO: Neighbor render chunk positions
+INPUT: EnumFacing
+OUTPUT / STATE CHANGES: 16-block offset and owning World
+CONSUMERS: DynamicLight
+WHY INCLUDED: Light sources near chunk borders invalidate adjacent chunks.
+SOURCE RANGE SHA256: FBE740EFAAA419FBDD4EBC4782B4595B4F5420FE991EFC7A81182D6F452B1847
+BEGIN EXACT SOURCE
+    public BlockPos getBlockPosOffset16(EnumFacing facing)
+    {
+        return this.mapEnumFacing[facing.ordinal()];
+    }
+
+    public World getWorld()
+    {
+        return this.world;
+    }
+END EXACT SOURCE
+
+===== CompiledChunk empty predicate =====
+NAME: CompiledChunk empty predicate
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\CompiledChunk.java
+SOURCE LINES: 28-37
+GOES TO: Empty compiled geometry decision
+INPUT: CompiledChunk
+OUTPUT / STATE CHANGES: isEmpty boolean
+CONSUMERS: DynamicLight
+WHY INCLUDED: Avoids scheduling updates for empty render geometry.
+SOURCE RANGE SHA256: 94F2A28753967E49E5C01B8E1B295560A2F181D839A649B1064043448BE01154
+BEGIN EXACT SOURCE
+    private final boolean[] layersStarted = new boolean[BlockRenderLayer.values().length];
+    private boolean empty = true;
+    private final List<TileEntity> tileEntities = Lists.<TileEntity>newArrayList();
+    private SetVisibility setVisibility = new SetVisibility();
+    private BufferBuilder.State state;
+
+    public boolean isEmpty()
+    {
+        return this.empty;
+    }
+END EXACT SOURCE
+

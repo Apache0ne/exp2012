@@ -1,0 +1,27 @@
+MINECRAFT HOST-DEPENDENCY GLUE AUDIT AFTER EXPORT
+=================================================
+
+Manifest rows checked: 219
+Destination hashes checked: 219
+Whole-file source/destination hashes: 108
+Existing captioned section copies checked against target bundle: 40
+New exact source ranges checked: 65
+External LWJGL binaries checked: 5
+
+PASS  Manifest header and 7-column schema.
+PASS  Every manifest destination exists and matches its recorded SHA-256.
+PASS  Every whole-file and external-binary row matches the mcp940 source hash.
+PASS  Every new captioned range matches the declared mcp940 source lines and range SHA-256.
+PASS  Existing captioned section files match the sibling focused bundle.
+PASS  Required World/Chunk/Block/Minecraft/Entity/render-cache/ItemStack/registry host coverage is present.
+PASS  Required OpenGL wrappers, shader framebuffer/uniform hosts, texture/resource managers and LWJGL artifacts are present.
+
+STATIC IMPORT BOUNDARY
+----------------------
+Direct-import classes still classified HOST-BOUNDARY: 269
+Those remaining classes are generic Minecraft gameplay, GUI, model, networking, tile-entity, world-generation or full-renderer dependencies outside the focused sky/cloud/light glue. They remain explicit host requirements; they are not claimed to be copied.
+
+READY STATE
+-----------
+The glue folder is internally copy/hash/range consistent for the requested host-facing subsystems. It is a source-level dependency closure, not a standalone Java build or runnable Minecraft client.
+No compilation, OpenGL context test, shader compilation or game launch was performed.

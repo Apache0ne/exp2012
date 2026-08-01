@@ -1,0 +1,94 @@
+Extracted sections from: src\minecraft\net\minecraft\block\Block.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 66-70 | block light opacity and emitted-light fields =====
+    protected int lightOpacity;
+    protected boolean translucent;
+
+    /** Amount of light emitted */
+    protected int lightValue;
+
+===== SOURCE LINES 192-210 | light opacity and light value accessors =====
+    public int getLightOpacity(IBlockState state)
+    {
+        return this.lightOpacity;
+    }
+
+    @Deprecated
+
+    /**
+     * Used in the renderer to apply ambient occlusion
+     */
+    public boolean isTranslucent(IBlockState state)
+    {
+        return this.translucent;
+    }
+
+    @Deprecated
+    public int getLightValue(IBlockState state)
+    {
+        return this.lightValue;
+
+===== SOURCE LINES 301-347 | default opacity and light-level builder methods =====
+    public Block(Material blockMaterialIn, MapColor blockMapColorIn)
+    {
+        this.enableStats = true;
+        this.blockSoundType = SoundType.STONE;
+        this.blockParticleGravity = 1.0F;
+        this.slipperiness = 0.6F;
+        this.blockMaterial = blockMaterialIn;
+        this.blockMapColor = blockMapColorIn;
+        this.blockState = this.createBlockState();
+        this.setDefaultState(this.blockState.getBaseState());
+        this.fullBlock = this.getDefaultState().isOpaqueCube();
+        this.lightOpacity = this.fullBlock ? 255 : 0;
+        this.translucent = !blockMaterialIn.blocksLight();
+    }
+
+    protected Block(Material materialIn)
+    {
+        this(materialIn, materialIn.getMaterialMapColor());
+    }
+
+    /**
+     * Sets the footstep sound for the block. Returns the object for convenience in constructing.
+     */
+    protected Block setSoundType(SoundType sound)
+    {
+        this.blockSoundType = sound;
+        return this;
+    }
+
+    /**
+     * Sets how much light is blocked going through this block. Returns the object for convenience in constructing.
+     */
+    protected Block setLightOpacity(int opacity)
+    {
+        this.lightOpacity = opacity;
+        return this;
+    }
+
+    /**
+     * Sets the light value that the block emits. Returns resulting block instance for constructing convenience.
+     */
+    protected Block setLightLevel(float value)
+    {
+        this.lightValue = (int)(15.0F * value);
+        return this;
+    }
+
+
+===== SOURCE LINES 490-500 | renderer packed-lightmap lookup =====
+    public int getPackedLightmapCoords(IBlockState state, IBlockAccess source, BlockPos pos)
+    {
+        int i = source.getCombinedLight(pos, state.getLightValue());
+
+        if (i == 0 && state.getBlock() instanceof BlockSlab)
+        {
+            pos = pos.down();
+            state = source.getBlockState(pos);
+            return source.getCombinedLight(pos, state.getLightValue());
+        }
+        else
+

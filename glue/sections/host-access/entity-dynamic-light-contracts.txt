@@ -1,0 +1,919 @@
+HOST DEPENDENCY GLUE: Entity, ItemStack, Blocks and Items dynamic-light host access
+This file contains exact source lines from mcp940. Captions describe the contract at the host boundary.
+The source text is unchanged; only the surrounding captions are added.
+
+===== Entity world and position fields =====
+NAME: Entity world and position fields
+SOURCE: src\minecraft\net\minecraft\entity\Entity.java
+SOURCE LINES: 105-118
+GOES TO: World ownership and world-space position
+INPUT: Entity construction/movement
+OUTPUT / STATE CHANGES: World reference and xyz coordinates
+CONSUMERS: DynamicLights, EntityRenderer, RenderGlobal
+WHY INCLUDED: Defines the generic entity state used to place lights and fog/camera effects.
+SOURCE RANGE SHA256: E4983E430295364B69B3CBF2533CEB1D5D9809EC9B5ED94B6977F44759F6A648
+BEGIN EXACT SOURCE
+    /** Reference to the World object. */
+    public World world;
+    public double prevPosX;
+    public double prevPosY;
+    public double prevPosZ;
+
+    /** Entity position X */
+    public double posX;
+
+    /** Entity position Y */
+    public double posY;
+
+    /** Entity position Z */
+    public double posZ;
+END EXACT SOURCE
+
+===== Entity id/data accessors =====
+NAME: Entity id/data accessors
+SOURCE: src\minecraft\net\minecraft\entity\Entity.java
+SOURCE LINES: 322-368
+GOES TO: Dynamic-light map key and synchronized data
+INPUT: Entity
+OUTPUT / STATE CHANGES: Entity id and EntityDataManager
+CONSUMERS: DynamicLights and entity subclasses
+WHY INCLUDED: The dynamic-light collection keys and reads host entity data through these methods.
+SOURCE RANGE SHA256: B7F4FD754C88F7C74BA0034E7E8B7B7704AD6CC00D63873E8F2B5DECACEF8EE6
+BEGIN EXACT SOURCE
+    public int getEntityId()
+    {
+        return this.entityId;
+    }
+
+    public void setEntityId(int id)
+    {
+        this.entityId = id;
+    }
+
+    public Set<String> getTags()
+    {
+        return this.tags;
+    }
+
+    public boolean addTag(String tag)
+    {
+        if (this.tags.size() >= 1024)
+        {
+            return false;
+        }
+        else
+        {
+            this.tags.add(tag);
+            return true;
+        }
+    }
+
+    public boolean removeTag(String tag)
+    {
+        return this.tags.remove(tag);
+    }
+
+    /**
+     * Called by the /kill command.
+     */
+    public void onKillCommand()
+    {
+        this.setDead();
+    }
+
+    protected abstract void entityInit();
+
+    public EntityDataManager getDataManager()
+    {
+        return this.dataManager;
+    }
+END EXACT SOURCE
+
+===== Entity brightness queries =====
+NAME: Entity brightness queries
+SOURCE: src\minecraft\net\minecraft\entity\Entity.java
+SOURCE LINES: 1527-1556
+GOES TO: World light at entity eye position
+INPUT: Entity position, eye height and World
+OUTPUT / STATE CHANGES: Packed and normalized brightness
+CONSUMERS: EntityRenderer/entity rendering
+WHY INCLUDED: Preserves the generic entity-to-world light query path.
+SOURCE RANGE SHA256: DF16CE3E8C33F157AE17A0457DBA659F1DC35513C67ACA0B52F7FD36F8F4F9F1
+BEGIN EXACT SOURCE
+    public int getBrightnessForRender()
+    {
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
+
+        if (this.world.isBlockLoaded(blockpos$mutableblockpos))
+        {
+            blockpos$mutableblockpos.setY(MathHelper.floor(this.posY + (double)this.getEyeHeight()));
+            return this.world.getCombinedLight(blockpos$mutableblockpos, 0);
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    /**
+     * Gets how bright this entity is.
+     */
+    public float getBrightness()
+    {
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
+
+        if (this.world.isBlockLoaded(blockpos$mutableblockpos))
+        {
+            blockpos$mutableblockpos.setY(MathHelper.floor(this.posY + (double)this.getEyeHeight()));
+            return this.world.getLightBrightness(blockpos$mutableblockpos);
+        }
+        else
+        {
+            return 0.0F;
+END EXACT SOURCE
+
+===== Entity burning predicate =====
+NAME: Entity burning predicate
+SOURCE: src\minecraft\net\minecraft\entity\Entity.java
+SOURCE LINES: 2541-2548
+GOES TO: Dynamic-light fire classification
+INPUT: Entity fire flag, world side and fire immunity
+OUTPUT / STATE CHANGES: Boolean burning state
+CONSUMERS: DynamicLights.getLightLevel(Entity)
+WHY INCLUDED: Burning entities become full-bright dynamic sources.
+SOURCE RANGE SHA256: CD793F7CBDF344C35133618DFAA0FEB1ABA5EB062F2DB7DB6F20F15607054FB8
+BEGIN EXACT SOURCE
+    /**
+     * Returns true if the entity is on fire. Used by render to add the fire effect on rendering.
+     */
+    public boolean isBurning()
+    {
+        boolean flag = this.world != null && this.world.isRemote;
+        return !this.isImmuneToFire && (this.fire > 0 || flag && this.getFlag(0));
+    }
+END EXACT SOURCE
+
+===== Entity bounds/eye/position methods =====
+NAME: Entity bounds/eye/position methods
+SOURCE: src\minecraft\net\minecraft\entity\Entity.java
+SOURCE LINES: 3236-3306
+GOES TO: Render bounds and light source coordinates
+INPUT: Entity transform
+OUTPUT / STATE CHANGES: Bounding box, eye height, BlockPos and Vec3d
+CONSUMERS: RenderGlobal, DynamicLight
+WHY INCLUDED: Render invalidation and attenuation need these host geometry methods.
+SOURCE RANGE SHA256: CB17FBB3EA112B75F51BEB159A88CD340D2A00E768252F4B4C94D45A687698A4
+BEGIN EXACT SOURCE
+    public AxisAlignedBB getEntityBoundingBox()
+    {
+        return this.boundingBox;
+    }
+
+    /**
+     * Gets the bounding box of this Entity, adjusted to take auxiliary entities into account (e.g. the tile contained
+     * by a minecart, such as a command block).
+     */
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return this.getEntityBoundingBox();
+    }
+
+    public void setEntityBoundingBox(AxisAlignedBB bb)
+    {
+        this.boundingBox = bb;
+    }
+
+    public float getEyeHeight()
+    {
+        return this.height * 0.85F;
+    }
+
+    public boolean isOutsideBorder()
+    {
+        return this.isOutsideBorder;
+    }
+
+    public void setOutsideBorder(boolean outsideBorder)
+    {
+        this.isOutsideBorder = outsideBorder;
+    }
+
+    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn)
+    {
+        return false;
+    }
+
+    /**
+     * Send a chat message to the CommandSender
+     */
+    public void sendMessage(ITextComponent component)
+    {
+    }
+
+    /**
+     * Returns {@code true} if the CommandSender is allowed to execute the command, {@code false} if not
+     */
+    public boolean canUseCommand(int permLevel, String commandName)
+    {
+        return true;
+    }
+
+    /**
+     * Get the position in the world. <b>{@code null} is not allowed!</b> If you are not an entity in the world, return
+     * the coordinates 0, 0, 0
+     */
+    public BlockPos getPosition()
+    {
+        return new BlockPos(this.posX, this.posY + 0.5D, this.posZ);
+    }
+
+    /**
+     * Get the position vector. <b>{@code null} is not allowed!</b> If you are not an entity in the world, return 0.0D,
+     * 0.0D, 0.0D
+     */
+    public Vec3d getPositionVector()
+    {
+        return new Vec3d(this.posX, this.posY, this.posZ);
+    }
+END EXACT SOURCE
+
+===== Living entity equipment access =====
+NAME: Living entity equipment access
+SOURCE: src\minecraft\net\minecraft\entity\EntityLivingBase.java
+SOURCE LINES: 1828-1880
+GOES TO: Held/offhand/head ItemStacks
+INPUT: EntityEquipmentSlot
+OUTPUT / STATE CHANGES: ItemStack values for equipment light
+CONSUMERS: DynamicLights.getLightLevel(Entity)
+WHY INCLUDED: Hand/head-held light sources cross this generic entity API.
+SOURCE RANGE SHA256: 9D959E308F26C2C8FA1D03FFF8CB13780A51887717EFEC70B0A884B267B36D71
+BEGIN EXACT SOURCE
+    public ItemStack getHeldItemMainhand()
+    {
+        return this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+    }
+
+    public ItemStack getHeldItemOffhand()
+    {
+        return this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+    }
+
+    public ItemStack getHeldItem(EnumHand hand)
+    {
+        if (hand == EnumHand.MAIN_HAND)
+        {
+            return this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+        }
+        else if (hand == EnumHand.OFF_HAND)
+        {
+            return this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid hand " + hand);
+        }
+    }
+
+    public void setHeldItem(EnumHand hand, ItemStack stack)
+    {
+        if (hand == EnumHand.MAIN_HAND)
+        {
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+        }
+        else
+        {
+            if (hand != EnumHand.OFF_HAND)
+            {
+                throw new IllegalArgumentException("Invalid hand " + hand);
+            }
+
+            this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
+        }
+    }
+
+    public boolean hasItemInSlot(EntityEquipmentSlot p_190630_1_)
+    {
+        return !this.getItemStackFromSlot(p_190630_1_).isEmpty();
+    }
+
+    public abstract Iterable<ItemStack> getArmorInventoryList();
+
+    public abstract ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn);
+
+    public abstract void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack);
+END EXACT SOURCE
+
+===== Living entity active item =====
+NAME: Living entity active item
+SOURCE: src\minecraft\net\minecraft\entity\EntityLivingBase.java
+SOURCE LINES: 3047-3050
+GOES TO: Active ItemStack
+INPUT: Living entity
+OUTPUT / STATE CHANGES: Current active item
+CONSUMERS: Item/light helpers
+WHY INCLUDED: Keeps the active-item host contract available.
+SOURCE RANGE SHA256: C4C8E025E8431A2F7222E87819DF6514D350CE9EEFDD7F48F64E65F11D124566
+BEGIN EXACT SOURCE
+    public ItemStack getActiveItemStack()
+    {
+        return this.activeItemStack;
+    }
+END EXACT SOURCE
+
+===== Player equipment implementation =====
+NAME: Player equipment implementation
+SOURCE: src\minecraft\net\minecraft\entity\player\EntityPlayer.java
+SOURCE LINES: 2263-2277
+GOES TO: Player hand/offhand/armor stacks
+INPUT: EntityEquipmentSlot and player inventory
+OUTPUT / STATE CHANGES: Concrete ItemStack for a slot
+CONSUMERS: DynamicLights
+WHY INCLUDED: EntityLivingBase delegates slot lookup to this player implementation.
+SOURCE RANGE SHA256: 69094BC4D933E0DC86F1EC861DA293CD8C3608BA5BCFE0E11168154B5AFE063C
+BEGIN EXACT SOURCE
+    public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn)
+    {
+        if (slotIn == EntityEquipmentSlot.MAINHAND)
+        {
+            return this.inventory.getCurrentItem();
+        }
+        else if (slotIn == EntityEquipmentSlot.OFFHAND)
+        {
+            return this.inventory.offHandInventory.get(0);
+        }
+        else
+        {
+            return slotIn.getSlotType() == EntityEquipmentSlot.Type.ARMOR ? (ItemStack)this.inventory.armorInventory.get(slotIn.getIndex()) : ItemStack.EMPTY;
+        }
+    }
+END EXACT SOURCE
+
+===== Player spectator predicate =====
+NAME: Player spectator predicate
+SOURCE: src\minecraft\net\minecraft\entity\player\EntityPlayer.java
+SOURCE LINES: 2385-2390
+GOES TO: Dynamic-light spectator gate
+INPUT: Player game mode
+OUTPUT / STATE CHANGES: Spectator boolean
+CONSUMERS: DynamicLights.getLightLevel(Entity)
+WHY INCLUDED: Spectators are excluded from dynamic hand/entity light.
+SOURCE RANGE SHA256: 57D8B191570B8690AA10770C8737E4B72038D4EFB074E576C8783D619895FCBB
+BEGIN EXACT SOURCE
+    /**
+     * Returns true if the player is in spectator mode.
+     */
+    public abstract boolean isSpectator();
+
+    public abstract boolean isCreative();
+END EXACT SOURCE
+
+===== Slime/magma squish state =====
+NAME: Slime/magma squish state
+SOURCE: src\minecraft\net\minecraft\entity\monster\EntitySlime.java
+SOURCE LINES: 39-50
+GOES TO: Magma-cube core-light input
+INPUT: Slime entity state
+OUTPUT / STATE CHANGES: Public squishFactor and world-owned entity
+CONSUMERS: DynamicLights
+WHY INCLUDED: Magma cube intensity is derived from this inherited public field.
+SOURCE RANGE SHA256: AE029F50903BFF51230E45C5242307371495636B19FD67AA988D8A5FDCE6AF79
+BEGIN EXACT SOURCE
+public class EntitySlime extends EntityLiving implements IMob
+{
+    private static final DataParameter<Integer> SLIME_SIZE = EntityDataManager.<Integer>createKey(EntitySlime.class, DataSerializers.VARINT);
+    public float squishAmount;
+    public float squishFactor;
+    public float prevSquishFactor;
+    private boolean wasOnGround;
+
+    public EntitySlime(World worldIn)
+    {
+        super(worldIn);
+        this.moveHelper = new EntitySlime.SlimeMoveHelper(this);
+END EXACT SOURCE
+
+===== Blaze charged/burning state =====
+NAME: Blaze charged/burning state
+SOURCE: src\minecraft\net\minecraft\entity\monster\EntityBlaze.java
+SOURCE LINES: 167-184
+GOES TO: Blaze dynamic-light level
+INPUT: ON_FIRE synchronized byte
+OUTPUT / STATE CHANGES: Charged boolean and burning override
+CONSUMERS: DynamicLights
+WHY INCLUDED: Blaze light level differs when charged.
+SOURCE RANGE SHA256: 66F5D38CACDD0C6C73E643EDDB621A18275F50E063A702C75126EFD6E850704C
+BEGIN EXACT SOURCE
+    /**
+     * Returns true if the entity is on fire. Used by render to add the fire effect on rendering.
+     */
+    public boolean isBurning()
+    {
+        return this.isCharged();
+    }
+
+    @Nullable
+    protected ResourceLocation getLootTable()
+    {
+        return LootTableList.ENTITIES_BLAZE;
+    }
+
+    public boolean isCharged()
+    {
+        return (((Byte)this.dataManager.get(ON_FIRE)).byteValue() & 1) != 0;
+    }
+END EXACT SOURCE
+
+===== Creeper flash intensity =====
+NAME: Creeper flash intensity
+SOURCE: src\minecraft\net\minecraft\entity\monster\EntityCreeper.java
+SOURCE LINES: 243-249
+GOES TO: Creeper dynamic-light level
+INPUT: Fuse timers and render partial tick
+OUTPUT / STATE CHANGES: Flash intensity
+CONSUMERS: DynamicLights
+WHY INCLUDED: Creeper light is conditional on this host animation value.
+SOURCE RANGE SHA256: 5E55346ADAA74672BD2D20AB43E9591FB838DD1395615F6AE86B426E9B4C92F3
+BEGIN EXACT SOURCE
+    /**
+     * Params: (Float)Render tick. Returns the intensity of the creeper's flash when it is ignited.
+     */
+    public float getCreeperFlashIntensity(float p_70831_1_)
+    {
+        return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * p_70831_1_) / (float)(this.fuseTime - 2);
+    }
+END EXACT SOURCE
+
+===== Dropped-item stack data =====
+NAME: Dropped-item stack data
+SOURCE: src\minecraft\net\minecraft\entity\item\EntityItem.java
+SOURCE LINES: 457-472
+GOES TO: ItemStack for a dropped entity
+INPUT: EntityDataManager item parameter
+OUTPUT / STATE CHANGES: Current dropped ItemStack
+CONSUMERS: DynamicLights
+WHY INCLUDED: Dropped light-emitting items are classified through this host data path.
+SOURCE RANGE SHA256: 80AD83FBE1580C6326E25523428C19A57965F8B32E19783DC6AE9B6CD57662C5
+BEGIN EXACT SOURCE
+    /**
+     * Gets the item that this entity represents.
+     */
+    public ItemStack getItem()
+    {
+        return (ItemStack)this.getDataManager().get(ITEM);
+    }
+
+    /**
+     * Sets the item that this entity represents.
+     */
+    public void setItem(ItemStack stack)
+    {
+        this.getDataManager().set(ITEM, stack);
+        this.getDataManager().setDirty(ITEM);
+    }
+END EXACT SOURCE
+
+===== TNT fuse data =====
+NAME: TNT fuse data
+SOURCE: src\minecraft\net\minecraft\entity\item\EntityTNTPrimed.java
+SOURCE LINES: 156-170
+GOES TO: TNT synchronized fuse value
+INPUT: FUSE DataParameter
+OUTPUT / STATE CHANGES: Current fuse integer
+CONSUMERS: DynamicLights/TNT state
+WHY INCLUDED: Captures the entity-data contract for the TNT branch.
+SOURCE RANGE SHA256: DFBFFDC2BE58F510BAC2551856D6FCFD2F7E1921381406645011B097B309A0D1
+BEGIN EXACT SOURCE
+    public void notifyDataManagerChange(DataParameter<?> key)
+    {
+        if (FUSE.equals(key))
+        {
+            this.fuse = this.getFuseDataManager();
+        }
+    }
+
+    /**
+     * Gets the fuse from the data manager
+     */
+    public int getFuseDataManager()
+    {
+        return ((Integer)this.dataManager.get(FUSE)).intValue();
+    }
+END EXACT SOURCE
+
+===== Fireball brightness override =====
+NAME: Fireball brightness override
+SOURCE: src\minecraft\net\minecraft\entity\projectile\EntityFireball.java
+SOURCE LINES: 259-270
+GOES TO: Always-bright projectile behavior
+INPUT: Fireball entity
+OUTPUT / STATE CHANGES: Brightness 1.0 and packed full light
+CONSUMERS: DynamicLights/entity rendering
+WHY INCLUDED: Fireballs are explicit full-bright light sources.
+SOURCE RANGE SHA256: DBA270E636235187FC6B09B88576E0DCE9008D882E740279B142AC6A07136F0A
+BEGIN EXACT SOURCE
+    /**
+     * Gets how bright this entity is.
+     */
+    public float getBrightness()
+    {
+        return 1.0F;
+    }
+
+    public int getBrightnessForRender()
+    {
+        return 15728880;
+    }
+END EXACT SOURCE
+
+===== ItemStack construction/empty state =====
+NAME: ItemStack construction/empty state
+SOURCE: src\minecraft\net\minecraft\item\ItemStack.java
+SOURCE LINES: 51-114
+GOES TO: Item identity and stack validity
+INPUT: Item/Block, count and metadata
+OUTPUT / STATE CHANGES: ItemStack with empty-state flag
+CONSUMERS: DynamicLights and entity equipment
+WHY INCLUDED: Dynamic-light classification must distinguish empty and real item stacks.
+SOURCE RANGE SHA256: 719BA0950E078F4AFB42B2FAC71E8D89288E7C685307456134D10DA938FA2FF0
+BEGIN EXACT SOURCE
+public final class ItemStack
+{
+    public static final ItemStack EMPTY = new ItemStack((Item)null);
+    public static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
+
+    /** Size of the stack. */
+    private int stackSize;
+
+    /**
+     * Number of animation frames to go when receiving an item (by walking into it, for example).
+     */
+    private int animationsToGo;
+    private final Item item;
+
+    /** An NBTTagCompound containing data about an ItemStack. */
+    private NBTTagCompound stackTagCompound;
+    private boolean isEmpty;
+    private int itemDamage;
+
+    /** Item frame this stack is on, or null if not on an item frame. */
+    private EntityItemFrame itemFrame;
+    private Block canDestroyCacheBlock;
+    private boolean canDestroyCacheResult;
+    private Block canPlaceOnCacheBlock;
+    private boolean canPlaceOnCacheResult;
+
+    public ItemStack(Block blockIn)
+    {
+        this(blockIn, 1);
+    }
+
+    public ItemStack(Block blockIn, int amount)
+    {
+        this(blockIn, amount, 0);
+    }
+
+    public ItemStack(Block blockIn, int amount, int meta)
+    {
+        this(Item.getItemFromBlock(blockIn), amount, meta);
+    }
+
+    public ItemStack(Item itemIn)
+    {
+        this(itemIn, 1);
+    }
+
+    public ItemStack(Item itemIn, int amount)
+    {
+        this(itemIn, amount, 0);
+    }
+
+    public ItemStack(Item itemIn, int amount, int meta)
+    {
+        this.item = itemIn;
+        this.itemDamage = meta;
+        this.stackSize = amount;
+
+        if (this.itemDamage < 0)
+        {
+            this.itemDamage = 0;
+        }
+
+        this.updateEmptyState();
+    }
+END EXACT SOURCE
+
+===== ItemStack item access =====
+NAME: ItemStack item access
+SOURCE: src\minecraft\net\minecraft\item\ItemStack.java
+SOURCE LINES: 140-187
+GOES TO: Item identity consumed by light rules
+INPUT: ItemStack
+OUTPUT / STATE CHANGES: isEmpty and Item (AIR fallback when empty)
+CONSUMERS: DynamicLights.getLightLevel(ItemStack)
+WHY INCLUDED: This is the terminal item lookup for handheld/dropped light.
+SOURCE RANGE SHA256: BBBC230EB08FD21EA083F35B9D06CC5827C96AA28DD3CDAF6B9605F178039CE5
+BEGIN EXACT SOURCE
+    public boolean isEmpty()
+    {
+        if (this == EMPTY)
+        {
+            return true;
+        }
+        else if (this.item != null && this.item != Item.getItemFromBlock(Blocks.AIR))
+        {
+            if (this.stackSize <= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return this.itemDamage < -32768 || this.itemDamage > 65535;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static void registerFixes(DataFixer fixer)
+    {
+        fixer.registerWalker(FixTypes.ITEM_INSTANCE, new BlockEntityTag());
+        fixer.registerWalker(FixTypes.ITEM_INSTANCE, new EntityTag());
+    }
+
+    /**
+     * Splits off a stack of the given amount of this stack and reduces this stack by the amount.
+     */
+    public ItemStack splitStack(int amount)
+    {
+        int i = Math.min(amount, this.stackSize);
+        ItemStack itemstack = this.copy();
+        itemstack.setCount(i);
+        this.shrink(i);
+        return itemstack;
+    }
+
+    /**
+     * Returns the object corresponding to the stack.
+     */
+    public Item getItem()
+    {
+        return this.isEmpty ? Item.getItemFromBlock(Blocks.AIR) : this.item;
+    }
+END EXACT SOURCE
+
+===== Registered light blocks =====
+NAME: Registered light blocks
+SOURCE: src\minecraft\net\minecraft\init\Blocks.java
+SOURCE LINES: 45-55
+GOES TO: Static WATER/LAVA block identities
+INPUT: Block registry
+OUTPUT / STATE CHANGES: Block references used by item/block light rules
+CONSUMERS: DynamicLights
+WHY INCLUDED: Lava bucket and block-item lighting compare against these host singletons.
+SOURCE RANGE SHA256: 60134B662DE567B562F87E034EEB0058288832E8F4E1908572B35FFE9A2F72C7
+BEGIN EXACT SOURCE
+    public static final Block STONE;
+    public static final BlockGrass GRASS;
+    public static final Block DIRT;
+    public static final Block COBBLESTONE;
+    public static final Block PLANKS;
+    public static final Block SAPLING;
+    public static final Block BEDROCK;
+    public static final BlockDynamicLiquid FLOWING_WATER;
+    public static final BlockStaticLiquid WATER;
+    public static final BlockDynamicLiquid FLOWING_LAVA;
+    public static final BlockStaticLiquid LAVA;
+END EXACT SOURCE
+
+===== Registered beacon block =====
+NAME: Registered beacon block
+SOURCE: src\minecraft\net\minecraft\init\Blocks.java
+SOURCE LINES: 190-199
+GOES TO: Static BEACON block identity
+INPUT: Block registry
+OUTPUT / STATE CHANGES: Beacon reference
+CONSUMERS: DynamicLights nether-star branch
+WHY INCLUDED: Nether-star light is derived from beacon emission.
+SOURCE RANGE SHA256: 5CAFEDD70E4517DE12F866070685B7E7FEE35B3F7D777836AD161FF06E7BE7F3
+BEGIN EXACT SOURCE
+    public static final Block ENDER_CHEST;
+    public static final BlockTripWireHook TRIPWIRE_HOOK;
+    public static final Block TRIPWIRE;
+    public static final Block EMERALD_BLOCK;
+    public static final Block SPRUCE_STAIRS;
+    public static final Block BIRCH_STAIRS;
+    public static final Block JUNGLE_STAIRS;
+    public static final Block COMMAND_BLOCK;
+    public static final BlockBeacon BEACON;
+    public static final Block COBBLESTONE_WALL;
+END EXACT SOURCE
+
+===== Water/lava block registration =====
+NAME: Water/lava block registration
+SOURCE: src\minecraft\net\minecraft\init\Blocks.java
+SOURCE LINES: 335-338
+GOES TO: Canonical water/lava instances
+INPUT: Registry names
+OUTPUT / STATE CHANGES: FLOWING/WATER/LAVA static assignments
+CONSUMERS: DynamicLights and World block state
+WHY INCLUDED: Shows where the singleton references are populated.
+SOURCE RANGE SHA256: 91A9DE29671DC6BD1652164FB68AA24374460FA25A9ADE055E00E7B8B1BF29F0
+BEGIN EXACT SOURCE
+            FLOWING_WATER = (BlockDynamicLiquid)getRegisteredBlock("flowing_water");
+            WATER = (BlockStaticLiquid)getRegisteredBlock("water");
+            FLOWING_LAVA = (BlockDynamicLiquid)getRegisteredBlock("flowing_lava");
+            LAVA = (BlockStaticLiquid)getRegisteredBlock("lava");
+END EXACT SOURCE
+
+===== Beacon block registration =====
+NAME: Beacon block registration
+SOURCE: src\minecraft\net\minecraft\init\Blocks.java
+SOURCE LINES: 479-481
+GOES TO: Canonical beacon instance
+INPUT: Registry name
+OUTPUT / STATE CHANGES: BEACON static assignment
+CONSUMERS: DynamicLights
+WHY INCLUDED: Completes the beacon lookup path.
+SOURCE RANGE SHA256: 445821968FDFF0A2B6E8990E3AC66490CE69DAE751A3F46DDCC6368FACA1D825
+BEGIN EXACT SOURCE
+            JUNGLE_STAIRS = getRegisteredBlock("jungle_stairs");
+            COMMAND_BLOCK = getRegisteredBlock("command_block");
+            BEACON = (BlockBeacon)getRegisteredBlock("beacon");
+END EXACT SOURCE
+
+===== Dynamic-light item singleton declarations =====
+NAME: Dynamic-light item singleton declarations
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 93-121
+GOES TO: Lava bucket/glowstone item identities
+INPUT: Item registry
+OUTPUT / STATE CHANGES: Static item references
+CONSUMERS: DynamicLights
+WHY INCLUDED: These declarations are the comparison keys for item light levels.
+SOURCE RANGE SHA256: 88C7987D039D60A257D9421CE52D1A65FAFE0E706EA44177662ECE46B428DB9D
+BEGIN EXACT SOURCE
+    public static final Item BUCKET;
+    public static final Item WATER_BUCKET;
+    public static final Item LAVA_BUCKET;
+    public static final Item MINECART;
+    public static final Item SADDLE;
+    public static final Item IRON_DOOR;
+    public static final Item REDSTONE;
+    public static final Item SNOWBALL;
+    public static final Item BOAT;
+    public static final Item SPRUCE_BOAT;
+    public static final Item BIRCH_BOAT;
+    public static final Item JUNGLE_BOAT;
+    public static final Item ACACIA_BOAT;
+    public static final Item DARK_OAK_BOAT;
+    public static final Item LEATHER;
+    public static final Item MILK_BUCKET;
+    public static final Item BRICK;
+    public static final Item CLAY_BALL;
+    public static final Item REEDS;
+    public static final Item PAPER;
+    public static final Item BOOK;
+    public static final Item SLIME_BALL;
+    public static final Item CHEST_MINECART;
+    public static final Item FURNACE_MINECART;
+    public static final Item EGG;
+    public static final Item COMPASS;
+    public static final ItemFishingRod FISHING_ROD;
+    public static final Item CLOCK;
+    public static final Item GLOWSTONE_DUST;
+END EXACT SOURCE
+
+===== Dynamic-light monster item declarations =====
+NAME: Dynamic-light monster item declarations
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 145-161
+GOES TO: Blaze/magma item identities
+INPUT: Item registry
+OUTPUT / STATE CHANGES: BLAZE_ROD, BLAZE_POWDER and MAGMA_CREAM references
+CONSUMERS: DynamicLights
+WHY INCLUDED: These are the handheld light-source comparison keys.
+SOURCE RANGE SHA256: 09E3C67B6525129E0CEB396987471C366DF10251C5B0D690D6B8922B45F5EDB1
+BEGIN EXACT SOURCE
+    public static final Item RABBIT_FOOT;
+    public static final Item RABBIT_HIDE;
+    public static final Item ROTTEN_FLESH;
+    public static final Item ENDER_PEARL;
+    public static final Item BLAZE_ROD;
+    public static final Item GHAST_TEAR;
+    public static final Item GOLD_NUGGET;
+    public static final Item NETHER_WART;
+    public static final ItemPotion POTIONITEM;
+    public static final ItemPotion SPLASH_POTION;
+    public static final ItemPotion LINGERING_POTION;
+    public static final Item GLASS_BOTTLE;
+    public static final Item DRAGON_BREATH;
+    public static final Item SPIDER_EYE;
+    public static final Item FERMENTED_SPIDER_EYE;
+    public static final Item BLAZE_POWDER;
+    public static final Item MAGMA_CREAM;
+END EXACT SOURCE
+
+===== Lava/glowstone item registration =====
+NAME: Lava/glowstone item registration
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 326-354
+GOES TO: Static item assignments
+INPUT: Registry names
+OUTPUT / STATE CHANGES: LAVA_BUCKET and GLOWSTONE_DUST instances
+CONSUMERS: DynamicLights
+WHY INCLUDED: Links declarations to actual host registry population.
+SOURCE RANGE SHA256: 147F861AB0A2561D3539878D81FDCA2999E949296584D15BC0CE36FB6EFA8BAC
+BEGIN EXACT SOURCE
+            BUCKET = getRegisteredItem("bucket");
+            WATER_BUCKET = getRegisteredItem("water_bucket");
+            LAVA_BUCKET = getRegisteredItem("lava_bucket");
+            MINECART = getRegisteredItem("minecart");
+            SADDLE = getRegisteredItem("saddle");
+            IRON_DOOR = getRegisteredItem("iron_door");
+            REDSTONE = getRegisteredItem("redstone");
+            SNOWBALL = getRegisteredItem("snowball");
+            BOAT = getRegisteredItem("boat");
+            SPRUCE_BOAT = getRegisteredItem("spruce_boat");
+            BIRCH_BOAT = getRegisteredItem("birch_boat");
+            JUNGLE_BOAT = getRegisteredItem("jungle_boat");
+            ACACIA_BOAT = getRegisteredItem("acacia_boat");
+            DARK_OAK_BOAT = getRegisteredItem("dark_oak_boat");
+            LEATHER = getRegisteredItem("leather");
+            MILK_BUCKET = getRegisteredItem("milk_bucket");
+            BRICK = getRegisteredItem("brick");
+            CLAY_BALL = getRegisteredItem("clay_ball");
+            REEDS = getRegisteredItem("reeds");
+            PAPER = getRegisteredItem("paper");
+            BOOK = getRegisteredItem("book");
+            SLIME_BALL = getRegisteredItem("slime_ball");
+            CHEST_MINECART = getRegisteredItem("chest_minecart");
+            FURNACE_MINECART = getRegisteredItem("furnace_minecart");
+            EGG = getRegisteredItem("egg");
+            COMPASS = getRegisteredItem("compass");
+            FISHING_ROD = (ItemFishingRod)getRegisteredItem("fishing_rod");
+            CLOCK = getRegisteredItem("clock");
+            GLOWSTONE_DUST = getRegisteredItem("glowstone_dust");
+END EXACT SOURCE
+
+===== Blaze/magma item registration =====
+NAME: Blaze/magma item registration
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 380-394
+GOES TO: Static item assignments
+INPUT: Registry names
+OUTPUT / STATE CHANGES: BLAZE_ROD, BLAZE_POWDER and MAGMA_CREAM instances
+CONSUMERS: DynamicLights
+WHY INCLUDED: Completes the entity/item light lookup table.
+SOURCE RANGE SHA256: 9E986D298723CB0F8288746AB1B696F7C55123C4A7BE1CFA848AD5ED3B455B1C
+BEGIN EXACT SOURCE
+            ROTTEN_FLESH = getRegisteredItem("rotten_flesh");
+            ENDER_PEARL = getRegisteredItem("ender_pearl");
+            BLAZE_ROD = getRegisteredItem("blaze_rod");
+            GHAST_TEAR = getRegisteredItem("ghast_tear");
+            GOLD_NUGGET = getRegisteredItem("gold_nugget");
+            NETHER_WART = getRegisteredItem("nether_wart");
+            POTIONITEM = (ItemPotion)getRegisteredItem("potion");
+            SPLASH_POTION = (ItemPotion)getRegisteredItem("splash_potion");
+            LINGERING_POTION = (ItemPotion)getRegisteredItem("lingering_potion");
+            GLASS_BOTTLE = getRegisteredItem("glass_bottle");
+            DRAGON_BREATH = getRegisteredItem("dragon_breath");
+            SPIDER_EYE = getRegisteredItem("spider_eye");
+            FERMENTED_SPIDER_EYE = getRegisteredItem("fermented_spider_eye");
+            BLAZE_POWDER = getRegisteredItem("blaze_powder");
+            MAGMA_CREAM = getRegisteredItem("magma_cream");
+END EXACT SOURCE
+
+===== Nether-star/prismarine item registration =====
+NAME: Nether-star/prismarine item registration
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 413-415
+GOES TO: Nether-star item assignment
+INPUT: Registry name
+OUTPUT / STATE CHANGES: NETHER_STAR instance
+CONSUMERS: DynamicLights
+WHY INCLUDED: Nether-star uses beacon light in the item classifier.
+SOURCE RANGE SHA256: C8A09BEEF18DAD5C2D7C15082A16CE44CC1F001B59FEB7FC0C640E8393B2947F
+BEGIN EXACT SOURCE
+            SKULL = getRegisteredItem("skull");
+            CARROT_ON_A_STICK = getRegisteredItem("carrot_on_a_stick");
+            NETHER_STAR = getRegisteredItem("nether_star");
+END EXACT SOURCE
+
+===== Prismarine-crystal item registration =====
+NAME: Prismarine-crystal item registration
+SOURCE: src\minecraft\net\minecraft\init\Items.java
+SOURCE LINES: 443-445
+GOES TO: Prismarine crystal assignment
+INPUT: Registry name
+OUTPUT / STATE CHANGES: PRISMARINE_CRYSTALS instance
+CONSUMERS: DynamicLights
+WHY INCLUDED: Completes the fixed-level prismarine item branch.
+SOURCE RANGE SHA256: 353CEE167771797C4EB0AEC6C11D42163D91C83C505CBC928874A341C2965FF5
+BEGIN EXACT SOURCE
+            RECORD_WAIT = getRegisteredItem("record_wait");
+            PRISMARINE_SHARD = getRegisteredItem("prismarine_shard");
+            PRISMARINE_CRYSTALS = getRegisteredItem("prismarine_crystals");
+END EXACT SOURCE
+

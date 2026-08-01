@@ -1,0 +1,188 @@
+Captioned closure additions
+These source excerpts preserve the original code without line-number prefixes.
+Each snippet states its input, output/state changes, consumers, and reason for inclusion.
+
+=== SNIPPET 1 ===
+NAME: RenderGlobal sky/cloud state initialization
+SOURCE: src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SOURCE LINES: 225-257 inclusive
+GOES TO: RenderGlobal(Minecraft)
+INPUT: Minecraft client, texture/render managers, VBO capability
+OUTPUT / STATE CHANGES: CloudRenderer, sky/star geometry, VBO/display-list state, and vertex format initialized
+CONSUMERS: RenderGlobal.renderSky and renderClouds
+WHY INCLUDED: The exported render methods require these fields to be initialized before first frame.
+--- SOURCE TEXT (preserved) ---
+    public RenderGlobal(Minecraft mcIn)
+    {
+        this.renderEnv = new RenderEnv(this.world, Blocks.AIR.getDefaultState(), new BlockPos(0, 0, 0));
+        this.renderOverlayDamaged = false;
+        this.renderOverlayEyes = false;
+        this.cloudRenderer = new CloudRenderer(mcIn);
+        this.mc = mcIn;
+        this.renderManager = mcIn.getRenderManager();
+        this.renderEngine = mcIn.getTextureManager();
+        this.renderEngine.bindTexture(FORCEFIELD_TEXTURES);
+        GlStateManager.glTexParameteri(3553, 10242, 10497);
+        GlStateManager.glTexParameteri(3553, 10243, 10497);
+        GlStateManager.bindTexture(0);
+        this.updateDestroyBlockIcons();
+        this.vboEnabled = OpenGlHelper.useVbo();
+
+        if (this.vboEnabled)
+        {
+            this.renderContainer = new VboRenderList();
+            this.renderChunkFactory = new VboChunkFactory();
+        }
+        else
+        {
+            this.renderContainer = new RenderList();
+            this.renderChunkFactory = new ListChunkFactory();
+        }
+
+        this.vertexBufferFormat = new VertexFormat();
+        this.vertexBufferFormat.addElement(new VertexFormatElement(0, VertexFormatElement.EnumType.FLOAT, VertexFormatElement.EnumUsage.POSITION, 3));
+        this.generateStars();
+        this.generateSky();
+        this.generateSky2();
+    }
+--- END SNIPPET 1 ---
+
+=== SNIPPET 2 ===
+NAME: EntityRenderer lightmap/weather state fields
+SOURCE: src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+SOURCE LINES: 165-205 inclusive
+GOES TO: EntityRenderer instance state
+INPUT: Renderer lifecycle and OpenGL buffer allocation
+OUTPUT / STATE CHANGES: Lightmap texture/data, torch flicker, rain coordinate arrays, fog buffer
+CONSUMERS: updateLightmap, renderRainSnow, setupFog
+WHY INCLUDED: The prior export contained methods that referenced fields outside the copied ranges.
+--- SOURCE TEXT (preserved) ---
+
+    /**
+     * The texture id of the blocklight/skylight texture used for lighting effects
+     */
+    private final DynamicTexture lightmapTexture;
+
+    /**
+     * Colors computed in updateLightmap() and loaded into the lightmap emptyTexture
+     */
+    private final int[] lightmapColors;
+    private final ResourceLocation locationLightMap;
+
+    /**
+     * Is set, updateCameraAndRender() calls updateLightmap(); set by updateTorchFlicker()
+     */
+    private boolean lightmapUpdateNeeded;
+
+    /** Torch flicker X */
+    private float torchFlickerX;
+    private float torchFlickerDX;
+
+    /** Rain sound counter */
+    private int rainSoundCounter;
+    private final float[] rainXCoords = new float[1024];
+    private final float[] rainYCoords = new float[1024];
+
+    /** Fog color buffer */
+    private final FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
+    public float fogColorRed;
+    public float fogColorGreen;
+    public float fogColorBlue;
+
+    /** Fog color 2 */
+    private float fogColor2;
+
+    /** Fog color 1 */
+    private float fogColor1;
+    private int debugViewDirection;
+    private boolean debugView;
+    private double cameraZoom = 1.0D;
+    private double cameraYaw;
+--- END SNIPPET 2 ---
+
+=== SNIPPET 3 ===
+NAME: EntityRenderer lightmap/weather constructor
+SOURCE: src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+SOURCE LINES: 231-254 inclusive
+GOES TO: EntityRenderer(Minecraft, IResourceManager)
+INPUT: Minecraft client and resource manager
+OUTPUT / STATE CHANGES: Dynamic 16x16 lightmap, texture location, lightmap array, rain direction tables
+CONSUMERS: renderWorld and updateLightmap
+WHY INCLUDED: Without this constructor state, the copied lightmap/weather methods cannot operate.
+--- SOURCE TEXT (preserved) ---
+    public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn)
+    {
+        this.shaderIndex = SHADER_COUNT;
+        this.mc = mcIn;
+        this.resourceManager = resourceManagerIn;
+        this.itemRenderer = mcIn.getItemRenderer();
+        this.mapItemRenderer = new MapItemRenderer(mcIn.getTextureManager());
+        this.lightmapTexture = new DynamicTexture(16, 16);
+        this.locationLightMap = mcIn.getTextureManager().getDynamicTextureLocation("lightMap", this.lightmapTexture);
+        this.lightmapColors = this.lightmapTexture.getTextureData();
+        this.shaderGroup = null;
+
+        for (int i = 0; i < 32; ++i)
+        {
+            for (int j = 0; j < 32; ++j)
+            {
+                float f = (float)(j - 16);
+                float f1 = (float)(i - 16);
+                float f2 = MathHelper.sqrt(f * f + f1 * f1);
+                this.rainXCoords[i << 5 | j] = -f1 / f2;
+                this.rainYCoords[i << 5 | j] = f / f2;
+            }
+        }
+    }
+--- END SNIPPET 3 ---
+
+=== SNIPPET 4 ===
+NAME: RenderChunk OptiFine light-cache entry
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SOURCE LINES: 170-183 inclusive
+GOES TO: RenderChunk.rebuildChunk(...)
+INPUT: Loaded world and render-chunk bounds
+OUTPUT / STATE CHANGES: Creates a ChunkCacheOF used during block mesh rebuild
+CONSUMERS: Block renderer and DynamicLights
+WHY INCLUDED: This is where cached combined light reaches actual chunk geometry.
+--- SOURCE TEXT (preserved) ---
+        if (this.world != null)
+        {
+            ChunkCacheOF chunkcacheof = this.makeChunkCacheOF();
+
+            if (!chunkcacheof.isEmpty())
+            {
+                ++renderChunksUpdated;
+                chunkcacheof.renderStart();
+                boolean[] aboolean = new boolean[ENUM_WORLD_BLOCK_LAYERS.length];
+                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+                boolean flag = Reflector.ForgeBlock_canRenderInLayer.exists();
+                boolean flag1 = Reflector.ForgeHooksClient_setRenderLayer.exists();
+
+                for (Object blockposm0 : BlockPosM.getAllInBoxMutable(blockpos, blockpos1))
+--- END SNIPPET 4 ---
+
+=== SNIPPET 5 ===
+NAME: RenderChunk cache construction
+SOURCE: src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SOURCE LINES: 598-609 inclusive
+GOES TO: RenderChunk.makeChunkCacheOF()
+INPUT: World region bounds
+OUTPUT / STATE CHANGES: ChunkCache wrapped by ChunkCacheOF
+CONSUMERS: RenderChunk.rebuildChunk
+WHY INCLUDED: The dynamic-light cache class is otherwise disconnected from rendering.
+--- SOURCE TEXT (preserved) ---
+    private ChunkCacheOF makeChunkCacheOF()
+    {
+        BlockPos blockpos = this.position.add(-1, -1, -1);
+        ChunkCache chunkcache = this.createRegionRenderCache(this.world, blockpos, this.position.add(16, 16, 16), 1);
+
+        if (Reflector.MinecraftForgeClient_onRebuildChunk.exists())
+        {
+            Reflector.call(Reflector.MinecraftForgeClient_onRebuildChunk, this.world, this.position, chunkcache);
+        }
+
+        ChunkCacheOF chunkcacheof = new ChunkCacheOF(chunkcache, blockpos, 1);
+        return chunkcacheof;
+--- END SNIPPET 5 ---
+

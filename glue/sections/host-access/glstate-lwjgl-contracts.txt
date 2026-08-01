@@ -1,0 +1,9 @@
+HOST DEPENDENCY CONTRACT: OpenGL/LWJGL bridge
+This is an explanatory contract note, not a replacement for executable source.
+
+1. GlStateManager.java (copied whole) is the fixed-function state boundary. Inputs are blend/depth/fog/texture/matrix/vertex state calls; output is GPU OpenGL state consumed by sky, cloud, weather, fog and lightmap rendering.
+2. OpenGlHelper.java (copied whole) is the capability and shader/framebuffer boundary. Inputs are texture units, shader programs, framebuffer ids and feature flags; output is bound GL resources and capability decisions.
+3. GLAllocation, Tessellator, BufferBuilder, VertexBuffer and vertex-format classes (copied whole) bridge Java geometry into display lists, CPU vertex streams and GPU buffers.
+4. The Java sources import org.lwjgl.* directly in CloudRenderer, Config, TextureUtils, Shaders and renderer classes. The exact LWJGL jars and 1.12 native lwjgl.dll/lwjgl64.dll are copied under external\\lwjgl.
+5. LWJGL is an external binary API, not Java source in mcp940. These binaries make the dependency explicit; they do not by themselves provide a standalone Minecraft window/context or replace the Minecraft host lifecycle.
+6. Required state groups include texture binding/upload, display lists, vertex pointers, matrix transforms, fog, alpha/blend/depth/cull, framebuffer/shader capability checks, and error/query calls.

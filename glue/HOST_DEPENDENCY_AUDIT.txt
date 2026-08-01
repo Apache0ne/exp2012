@@ -1,0 +1,714 @@
+MINECRAFT HOST-DEPENDENCY GLUE AUDIT
+===================================
+
+Generated from: D:\voxelworldshadersoruces\mcp940
+Focused Java source files scanned: 53
+Glue manifest rows: 219
+
+COPY RESULTS
+------------
+Whole-file host copies: 108
+New captioned host source files: 6 (World, Chunk, Block, Minecraft, entity/dynamic-light, render cache)
+Existing focused captioned section rows copied into glue: 40
+External LWJGL binaries: 5
+All whole-file and binary copies were hash-checked against mcp940 at export time.
+
+TARGETED COVERAGE
+-----------------
+PASS  World/WorldProvider/WorldInfo/WorldServer: world lookup, time, weather, sky brightness, combined light, propagation and server skylight tick are represented by whole contracts or exact ranges.
+PASS  Chunk/ExtendedBlockStorage/NibbleArray/EnumSkyBlock: chunk state lookup, sky visibility, SKY/BLOCK nibble storage, subtraction and relight queue are represented.
+PASS  Block/IBlockState/Material/Blocks/Items/ItemStack: opacity, emitted light, registry identity and item light classification are represented.
+PASS  Entity/EntityLivingBase/EntityPlayer and fire/item subclasses: position/world, brightness, burning, equipment, spectator, fireball/TNT/blaze/magma/creeper/item inputs are represented.
+PASS  RenderGlobal/RenderChunk/CompiledChunk/Minecraft: render invalidation, chunk-cache access, client singleton, texture/resource managers and partial ticks are represented.
+PASS  GlStateManager/OpenGlHelper/Tessellator/BufferBuilder/VertexBuffer/vertex formats: whole Java wrapper contracts are copied.
+PASS  TextureManager/TextureUtil/DynamicTexture/SimpleTexture and resource-manager/pack classes: whole Java resource/texture contracts are copied.
+PASS  LWJGL: exact mcp940 jars and lwjgl.dll/lwjgl64.dll are copied under external\\lwjgl; no Java-source reconstruction is claimed.
+
+DIRECT IMPORT INVENTORY
+-----------------------
+Status`tImported class`tConsumer source files
+HOST-BOUNDARY	net.minecraft.advancements.AdvancementManager	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.advancements.FunctionManager	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-SECTION	net.minecraft.block.Block	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.block.BlockBed	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.block.BlockCactus	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+HOST-BOUNDARY	net.minecraft.block.BlockChest	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.block.BlockEnderChest	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.block.BlockEventData	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.block.BlockFlower	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.block.BlockLiquid	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.block.BlockObserver	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.block.BlockRedstoneWire	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.block.BlockSand	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.block.BlockSign	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.block.BlockSkull	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.block.BlockStem	src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.block.BlockTallGrass	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.block.ITileEntityProvider	src\minecraft\net\minecraft\world\chunk\Chunk.java
+COPIED-WHOLE	net.minecraft.block.material.EnumPushReaction	src\minecraft\net\minecraft\block\Block.java
+COPIED-WHOLE	net.minecraft.block.material.MapColor	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\src\CustomColors.java
+COPIED-WHOLE	net.minecraft.block.material.Material	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java, src\minecraft\shadersmod\client\Shaders.java
+COPIED-WHOLE	net.minecraft.block.properties.IProperty	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\src\Reflector.java
+COPIED-WHOLE	net.minecraft.block.properties.PropertyBool	src\minecraft\net\minecraft\block\BlockLeaves.java
+COPIED-WHOLE	net.minecraft.block.properties.PropertyDirection	src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockStairs.java
+COPIED-WHOLE	net.minecraft.block.properties.PropertyEnum	src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java
+COPIED-WHOLE	net.minecraft.block.properties.PropertyInteger	src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockFarmland.java
+COPIED-WHOLE	net.minecraft.block.SoundType	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.block.state.BlockFaceShape	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java
+COPIED-WHOLE	net.minecraft.block.state.BlockStateBase	src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\MatchBlock.java
+COPIED-WHOLE	net.minecraft.block.state.BlockStateContainer	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockStairs.java
+COPIED-WHOLE	net.minecraft.block.state.IBlockState	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\IBlockAccess.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.client.audio.ISound	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.audio.MovingSoundMinecart	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+HOST-BOUNDARY	net.minecraft.client.audio.PositionedSoundRecord	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.entity.AbstractClientPlayer	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.client.entity.EntityPlayerSP	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+HOST-BOUNDARY	net.minecraft.client.gui.chat.NarratorChatListener	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.client.gui.FontRenderer	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.gui.GuiDownloadTerrain	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.client.gui.GuiMainMenu	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.gui.GuiNewChat	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.client.gui.GuiScreen	src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.gui.MapItemRenderer	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.client.gui.ScaledResolution	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java
+HOST-BOUNDARY	net.minecraft.client.LoadingScreenRenderer	src\minecraft\net\minecraft\src\Config.java
+COPIED-SECTION	net.minecraft.client.Minecraft	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelBanner	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelBase	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelBat	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelBlaze	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelBook	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelChest	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelDragon	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelDragonHead	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelEnderCrystal	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelEnderMite	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelEvokerFangs	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelGhast	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelGuardian	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelHorse	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelHumanoidHead	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelLeashKnot	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelMagmaCube	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelOcelot	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelRabbit	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelRenderer	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelShulker	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelShulkerBullet	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelSign	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelSilverfish	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelSkeletonHead	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelSlime	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelSquid	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelVex	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelWitch	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelWither	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.model.ModelWolf	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.multiplayer.ChunkProviderClient	src\minecraft\net\minecraft\src\Reflector.java
+COPIED-WHOLE	net.minecraft.client.multiplayer.WorldClient	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.network.NetHandlerPlayClient	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+HOST-BOUNDARY	net.minecraft.client.particle.Particle	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.client.particle.ParticleFirework	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+HOST-BOUNDARY	net.minecraft.client.particle.ParticleManager	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.client.renderer.ActiveRenderInfo	src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.BakedQuad	src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.ItemCameraTransforms	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.ItemOverrideList	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.ModelBlockDefinition	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.ModelManager	src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.block.model.ModelRotation	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.BlockRendererDispatcher	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-WHOLE	net.minecraft.client.renderer.BufferBuilder	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\CustomSkyLayer.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.chunk.ChunkRenderDispatcher	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-SECTION	net.minecraft.client.renderer.chunk.CompiledChunk	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\DynamicLight.java
+HOST-BOUNDARY	net.minecraft.client.renderer.chunk.IRenderChunkFactory	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.renderer.chunk.ListChunkFactory	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-SECTION	net.minecraft.client.renderer.chunk.RenderChunk	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\DynamicLight.java
+HOST-BOUNDARY	net.minecraft.client.renderer.chunk.VboChunkFactory	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.renderer.chunk.VisGraph	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.renderer.color.BlockColors	src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.client.renderer.culling.ClippingHelper	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.culling.ClippingHelperImpl	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.renderer.culling.Frustum	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.culling.ICamera	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.Render	src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderBoat	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderEnderCrystal	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderEvokerFangs	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderItemFrame	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderLeashKnot	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderLiving	src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderLivingBase	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderManager	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderMinecart	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderShulkerBullet	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.entity.RenderWitherSkull	src\minecraft\net\minecraft\src\Reflector.java
+EXISTING-BUNDLE	net.minecraft.client.renderer.EntityRenderer	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.GLAllocation	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.renderer.GlStateManager	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomSkyLayer.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.ItemRenderer	src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.OpenGlHelper	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.RegionRenderCacheBuilder	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-SECTION	net.minecraft.client.renderer.RenderGlobal	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.client.renderer.RenderHelper	src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.Tessellator	src\minecraft\net\minecraft\src\CustomSkyLayer.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.DynamicTexture	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.ITextureObject	src\minecraft\net\minecraft\src\CustomSky.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.ITickableTextureObject	src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.SimpleTexture	src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.TextureAtlasSprite	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.TextureManager	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomSky.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.TextureMap	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.texture.TextureUtil	src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityBannerRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityChestRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityEnchantmentTableRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityEnderChestRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntityShulkerBoxRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntitySignRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-WHOLE	net.minecraft.client.renderer.vertex.DefaultVertexFormats	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomSkyLayer.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.client.renderer.vertex.VertexBuffer	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.client.renderer.vertex.VertexFormat	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.client.renderer.vertex.VertexFormatElement	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.client.renderer.ViewFrustum	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-WHOLE	net.minecraft.client.resources.AbstractResourcePack	src\minecraft\net\minecraft\src\ResUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.DefaultResourcePack	src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\src\ResUtils.java
+HOST-BOUNDARY	net.minecraft.client.resources.I18n	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+COPIED-WHOLE	net.minecraft.client.resources.IReloadableResourceManager	src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.IResource	src\minecraft\net\minecraft\src\Config.java
+COPIED-WHOLE	net.minecraft.client.resources.IResourceManager	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.IResourceManagerReloadListener	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\TextureUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.IResourcePack	src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\src\ResUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.LegacyV2Adapter	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\src\ResUtils.java
+COPIED-WHOLE	net.minecraft.client.resources.ResourcePackRepository	src\minecraft\net\minecraft\src\Config.java
+COPIED-WHOLE	net.minecraft.client.resources.ResourcePackRepository.Entry	src\minecraft\net\minecraft\src\Config.java
+EXISTING-BUNDLE	net.minecraft.client.settings.GameSettings	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.client.settings.KeyBinding	src\minecraft\net\minecraft\src\Reflector.java
+COPIED-WHOLE	net.minecraft.client.shader.Framebuffer	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.client.shader.ShaderGroup	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.client.shader.ShaderLinkHelper	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.client.tutorial.TutorialSteps	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.client.util.ITooltipFlag	src\minecraft\net\minecraft\block\Block.java
+HOST-BOUNDARY	net.minecraft.crash.CrashReport	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.crash.CrashReportCategory	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.crash.ICrashReportDetail	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java, src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.creativetab.CreativeTabs	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockStairs.java
+HOST-BOUNDARY	net.minecraft.enchantment.EnchantmentHelper	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.entity.effect.EntityLightningBolt	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-SECTION	net.minecraft.entity.Entity	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.entity.EntityList	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.EntityLiving	src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\World.java
+COPIED-SECTION	net.minecraft.entity.EntityLivingBase	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\WorldServer.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.entity.EntityTracker	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.EnumCreatureType	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.INpc	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.item.EntityFallingBlock	src\minecraft\net\minecraft\block\BlockAnvil.java
+COPIED-WHOLE	net.minecraft.entity.item.EntityItem	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.entity.item.EntityItemFrame	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.entity.item.EntityMinecart	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+COPIED-WHOLE	net.minecraft.entity.item.EntityTNTPrimed	src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.entity.item.EntityXPOrb	src\minecraft\net\minecraft\block\Block.java
+COPIED-WHOLE	net.minecraft.entity.monster.EntityBlaze	src\minecraft\net\minecraft\src\DynamicLights.java
+COPIED-WHOLE	net.minecraft.entity.monster.EntityCreeper	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntityEnderman	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\biome\BiomeEnd.java
+COPIED-WHOLE	net.minecraft.entity.monster.EntityMagmaCube	src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntitySkeleton	src\minecraft\net\minecraft\world\biome\Biome.java
+COPIED-WHOLE	net.minecraft.entity.monster.EntitySlime	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntitySpider	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntityWitch	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntityZombie	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.monster.EntityZombieVillager	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityAnimal	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityBat	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityChicken	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityCow	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityPig	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntitySheep	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntitySkeletonHorse	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntitySquid	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.entity.passive.EntityWaterMob	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-SECTION	net.minecraft.entity.player.EntityPlayer	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.player.EntityPlayerMP	src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.entity.player.EnumPlayerModelParts	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.entity.player.InventoryPlayer	src\minecraft\net\minecraft\block\BlockAnvil.java
+COPIED-WHOLE	net.minecraft.entity.projectile.EntityFireball	src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.init.Biomes	src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldProviderHell.java
+COPIED-SECTION	net.minecraft.init.Blocks	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\biome\BiomeEnd.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.init.Enchantments	src\minecraft\net\minecraft\block\Block.java
+COPIED-SECTION	net.minecraft.init.Items	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.init.MobEffects	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.init.SoundEvents	src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.inventory.Container	src\minecraft\net\minecraft\block\BlockAnvil.java
+HOST-BOUNDARY	net.minecraft.inventory.ContainerRepair	src\minecraft\net\minecraft\block\BlockAnvil.java
+COPIED-WHOLE	net.minecraft.inventory.EntityEquipmentSlot	src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.inventory.IInventory	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.item.EnumDyeColor	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\src\CustomColors.java
+COPIED-WHOLE	net.minecraft.item.Item	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.item.ItemArmor	src\minecraft\net\minecraft\src\Reflector.java
+COPIED-WHOLE	net.minecraft.item.ItemBlock	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.item.ItemDye	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.item.ItemMonsterPlacer	src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.item.ItemRecord	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-SECTION	net.minecraft.item.ItemStack	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.nbt.NBTTagCompound	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java
+COPIED-WHOLE	net.minecraft.network.datasync.DataParameter	src\minecraft\net\minecraft\src\DynamicLights.java
+COPIED-WHOLE	net.minecraft.network.datasync.DataSerializers	src\minecraft\net\minecraft\src\DynamicLights.java
+HOST-BOUNDARY	net.minecraft.network.Packet	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.PacketBuffer	src\minecraft\net\minecraft\world\chunk\Chunk.java
+HOST-BOUNDARY	net.minecraft.network.play.client.CPacketClientSettings	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketBlockAction	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketChangeGameState	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketEntityStatus	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketExplosion	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketParticles	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.network.play.server.SPacketSpawnGlobalEntity	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.pathfinding.PathWorldListener	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.potion.Potion	src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.potion.PotionEffect	src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.profiler.Profiler	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.scoreboard.Scoreboard	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.scoreboard.ScoreboardSaveData	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.scoreboard.ServerScoreboard	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.server.integrated.IntegratedServer	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java
+HOST-BOUNDARY	net.minecraft.server.management.PlayerChunkMap	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.server.MinecraftServer	src\minecraft\net\minecraft\world\storage\WorldInfo.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.src.BlockPosM	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-WHOLE	net.minecraft.src.ChunkCacheOF	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+HOST-BOUNDARY	net.minecraft.src.ChunkUtils	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.src.ClearWater	src\minecraft\net\minecraft\client\settings\GameSettings.java
+EXISTING-BUNDLE	net.minecraft.src.CloudRenderer	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+EXISTING-BUNDLE	net.minecraft.src.Config	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+EXISTING-BUNDLE	net.minecraft.src.CustomColors	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\shadersmod\client\Shaders.java
+EXISTING-BUNDLE	net.minecraft.src.CustomSky	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+EXISTING-BUNDLE	net.minecraft.src.DynamicLights	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+COPIED-WHOLE	net.minecraft.src.EntityUtils	src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.src.Lagometer	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.src.Lang	src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.src.NaturalTextures	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.src.PlayerControllerOF	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+EXISTING-BUNDLE	net.minecraft.src.PropertiesOrdered	src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.src.RandomMobs	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+EXISTING-BUNDLE	net.minecraft.src.Reflector	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.src.ReflectorForge	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.src.RenderEnv	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.src.RenderInfoLazy	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+COPIED-WHOLE	net.minecraft.src.StrUtils	src\minecraft\shadersmod\client\Shaders.java
+EXISTING-BUNDLE	net.minecraft.src.TextureUtils	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.stats.StatList	src\minecraft\net\minecraft\block\Block.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntity	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\IBlockAccess.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntityChest	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntityEnchantmentTable	src\minecraft\net\minecraft\block\BlockEnchantmentTable.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntityEndGateway	src\minecraft\net\minecraft\block\BlockEndGateway.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntityEndPortal	src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.tileentity.TileEntitySign	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.util.BlockRenderLayer	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+COPIED-WHOLE	net.minecraft.util.ClassInheritanceMultiMap	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java
+HOST-BOUNDARY	net.minecraft.util.DamageSource	src\minecraft\net\minecraft\block\BlockMagma.java
+HOST-BOUNDARY	net.minecraft.util.datafix.DataFixer	src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.util.datafix.FixTypes	src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.util.datafix.IDataFixer	src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.util.datafix.IDataWalker	src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.util.EntitySelectors	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.util.EnumBlockRenderType	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+COPIED-WHOLE	net.minecraft.util.EnumFacing	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\IBlockAccess.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.util.EnumHand	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.util.EnumHandSide	src\minecraft\net\minecraft\client\settings\GameSettings.java
+HOST-BOUNDARY	net.minecraft.util.EnumParticleTypes	src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.IntHashMap	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.util.IProgressUpdate	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.util.IStringSerializable	src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java
+HOST-BOUNDARY	net.minecraft.util.IThreadListener	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.ITickable	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.util.JsonUtils	src\minecraft\net\minecraft\client\settings\GameSettings.java
+COPIED-WHOLE	net.minecraft.util.math.AxisAlignedBB	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.math.BlockPos	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\IBlockAccess.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.math.ChunkPos	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.math.MathHelper	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.util.math.RayTraceResult	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\World.java
+COPIED-WHOLE	net.minecraft.util.math.Vec3d	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\CustomColorFader.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldProviderHell.java, src\minecraft\net\minecraft\world\WorldServer.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.util.Mirror	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockStairs.java
+HOST-BOUNDARY	net.minecraft.util.MouseFilter	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.util.NonNullList	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java
+HOST-BOUNDARY	net.minecraft.util.ObjectIntIdentityMap	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.util.registry.RegistryNamespaced	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.util.registry.RegistryNamespacedDefaultedByKey	src\minecraft\net\minecraft\block\Block.java
+HOST-BOUNDARY	net.minecraft.util.ReportedException	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.util.ResourceLocation	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\CustomSky.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\src\ResUtils.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+HOST-BOUNDARY	net.minecraft.util.Rotation	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockStairs.java
+HOST-BOUNDARY	net.minecraft.util.ScreenShotHelper	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+HOST-BOUNDARY	net.minecraft.util.SoundCategory	src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.util.SoundEvent	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.util.text.ITextComponent	src\minecraft\net\minecraft\block\BlockAnvil.java
+HOST-BOUNDARY	net.minecraft.util.text.TextComponentString	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\shadersmod\client\Shaders.java
+HOST-BOUNDARY	net.minecraft.util.text.TextComponentTranslation	src\minecraft\net\minecraft\block\BlockAnvil.java
+HOST-BOUNDARY	net.minecraft.util.text.translation.I18n	src\minecraft\net\minecraft\block\Block.java
+HOST-BOUNDARY	net.minecraft.util.WeightedRandom	src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.village.VillageCollection	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.village.VillageSiege	src\minecraft\net\minecraft\world\WorldServer.java
+EXISTING-BUNDLE	net.minecraft.world.biome.Biome	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\IBlockAccess.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.world.biome.BiomeProvider	src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.world.biome.BiomeProviderSingle	src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldProviderHell.java
+COPIED-WHOLE	net.minecraft.world.border.WorldBorder	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderHell.java
+HOST-BOUNDARY	net.minecraft.world.chunk.BlockStateContainer	src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java
+COPIED-SECTION	net.minecraft.world.chunk.Chunk	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\world\ChunkCache.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.chunk.ChunkPrimer	src\minecraft\net\minecraft\world\biome\Biome.java
+COPIED-WHOLE	net.minecraft.world.chunk.IChunkProvider	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.world.chunk.NibbleArray	src\minecraft\net\minecraft\world\chunk\storage\ExtendedBlockStorage.java
+COPIED-WHOLE	net.minecraft.world.chunk.storage.ExtendedBlockStorage	src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.chunk.storage.IChunkLoader	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.world.ChunkCache	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\Reflector.java
+HOST-BOUNDARY	net.minecraft.world.ColorizerFoliage	src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.ColorizerGrass	src\minecraft\net\minecraft\world\biome\Biome.java
+COPIED-WHOLE	net.minecraft.world.DimensionType	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.world.end.DragonFightManager	src\minecraft\net\minecraft\world\WorldProviderEnd.java
+HOST-BOUNDARY	net.minecraft.world.EnumDifficulty	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+COPIED-WHOLE	net.minecraft.world.EnumSkyBlock	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java
+HOST-BOUNDARY	net.minecraft.world.Explosion	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockStairs.java
+COPIED-WHOLE	net.minecraft.world.GameRules	src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.world.GameType	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkGeneratorDebug	src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\WorldProvider.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkGeneratorEnd	src\minecraft\net\minecraft\world\WorldProviderEnd.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkGeneratorFlat	src\minecraft\net\minecraft\world\WorldProvider.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkGeneratorHell	src\minecraft\net\minecraft\world\WorldProviderHell.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkGeneratorOverworld	src\minecraft\net\minecraft\world\WorldProvider.java
+HOST-BOUNDARY	net.minecraft.world.gen.ChunkProviderServer	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenAbstractTree	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenBigTree	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenDoublePlant	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenerator	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGeneratorBonusChest	src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenSwamp	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenTallGrass	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.feature.WorldGenTrees	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.FlatGeneratorInfo	src\minecraft\net\minecraft\world\WorldProvider.java
+HOST-BOUNDARY	net.minecraft.world.gen.IChunkGenerator	src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\WorldProvider.java, src\minecraft\net\minecraft\world\WorldProviderEnd.java, src\minecraft\net\minecraft\world\WorldProviderHell.java
+HOST-BOUNDARY	net.minecraft.world.gen.NoiseGeneratorPerlin	src\minecraft\net\minecraft\world\biome\Biome.java
+HOST-BOUNDARY	net.minecraft.world.gen.structure.StructureBoundingBox	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.gen.structure.template.TemplateManager	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-WHOLE	net.minecraft.world.IBlockAccess	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\src\CustomColormap.java, src\minecraft\net\minecraft\src\CustomColors.java
+HOST-BOUNDARY	net.minecraft.world.IInteractionObject	src\minecraft\net\minecraft\block\BlockAnvil.java
+HOST-BOUNDARY	net.minecraft.world.IWorldEventListener	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+HOST-BOUNDARY	net.minecraft.world.storage.ISaveHandler	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.storage.loot.LootTableManager	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.storage.MapStorage	src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.storage.SaveDataMemoryStorage	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+HOST-BOUNDARY	net.minecraft.world.storage.SaveHandlerMP	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java
+COPIED-WHOLE	net.minecraft.world.storage.WorldInfo	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\World.java, src\minecraft\net\minecraft\world\WorldServer.java
+HOST-BOUNDARY	net.minecraft.world.storage.WorldSavedData	src\minecraft\net\minecraft\world\World.java
+HOST-BOUNDARY	net.minecraft.world.storage.WorldSavedDataCallableSave	src\minecraft\net\minecraft\world\WorldServer.java
+COPIED-SECTION	net.minecraft.world.World	src\minecraft\net\minecraft\block\Block.java, src\minecraft\net\minecraft\block\BlockAir.java, src\minecraft\net\minecraft\block\BlockAnvil.java, src\minecraft\net\minecraft\block\BlockEnchantmentTable.java, src\minecraft\net\minecraft\block\BlockEndGateway.java, src\minecraft\net\minecraft\block\BlockEndPortal.java, src\minecraft\net\minecraft\block\BlockFarmland.java, src\minecraft\net\minecraft\block\BlockGrassPath.java, src\minecraft\net\minecraft\block\BlockLeaves.java, src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\block\BlockRedstoneLight.java, src\minecraft\net\minecraft\block\BlockSlab.java, src\minecraft\net\minecraft\block\BlockStairs.java, src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\CustomColors.java, src\minecraft\net\minecraft\src\CustomSky.java, src\minecraft\net\minecraft\src\CustomSkyLayer.java, src\minecraft\net\minecraft\src\DynamicLight.java, src\minecraft\net\minecraft\src\DynamicLights.java, src\minecraft\net\minecraft\src\Reflector.java, src\minecraft\net\minecraft\world\biome\Biome.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\chunk\EmptyChunk.java, src\minecraft\shadersmod\client\Shaders.java
+COPIED-WHOLE	net.minecraft.world.WorldProvider	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\Reflector.java
+COPIED-SECTION	net.minecraft.world.WorldServer	src\minecraft\net\minecraft\block\BlockMagma.java, src\minecraft\net\minecraft\src\Config.java
+HOST-BOUNDARY	net.minecraft.world.WorldSettings	src\minecraft\net\minecraft\client\multiplayer\WorldClient.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+COPIED-WHOLE	net.minecraft.world.WorldType	src\minecraft\net\minecraft\src\ChunkCacheOF.java, src\minecraft\net\minecraft\world\chunk\Chunk.java, src\minecraft\net\minecraft\world\storage\WorldInfo.java
+EXTERNAL-LWJGL	org.lwjgl.BufferUtils	src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.input.Keyboard	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+EXTERNAL-LWJGL	org.lwjgl.input.Mouse	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\settings\GameSettings.java
+EXTERNAL-LWJGL	org.lwjgl.LWJGLException	src\minecraft\net\minecraft\src\Config.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.ARBFragmentShader	src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.ARBShaderObjects	src\minecraft\shadersmod\client\ShaderProgramData.java, src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.ARBVertexShader	src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.ContextCapabilities	src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.Display	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\Config.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.DisplayMode	src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\Config.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.EXTFramebufferObject	src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GL11	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\CloudRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GL12	src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GL14	src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GL20	src\minecraft\net\minecraft\src\Config.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GL30	src\minecraft\net\minecraft\src\Config.java, src\minecraft\shadersmod\client\Shaders.java, src\minecraft\shadersmod\client\ShadersRender.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.GLContext	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java, src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.opengl.PixelFormat	src\minecraft\net\minecraft\src\Config.java
+EXTERNAL-LWJGL	org.lwjgl.Sys	src\minecraft\net\minecraft\src\Config.java
+EXTERNAL-LWJGL	org.lwjgl.util.glu.GLU	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\shadersmod\client\Shaders.java
+EXTERNAL-LWJGL	org.lwjgl.util.glu.Project	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java
+EXTERNAL-LWJGL	org.lwjgl.util.vector.Vector3f	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+EXTERNAL-LWJGL	org.lwjgl.util.vector.Vector4f	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SHADERMOD-HOST	shadersmod.client.MultiTexID	src\minecraft\net\minecraft\src\TextureUtils.java
+SHADERMOD-HOST	shadersmod.client.Shaders	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java, src\minecraft\net\minecraft\client\settings\GameSettings.java, src\minecraft\net\minecraft\src\Config.java, src\minecraft\net\minecraft\src\TextureUtils.java
+SHADERMOD-HOST	shadersmod.client.ShadersRender	src\minecraft\net\minecraft\client\renderer\EntityRenderer.java, src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SHADERMOD-HOST	shadersmod.client.ShadowUtils	src\minecraft\net\minecraft\client\renderer\RenderGlobal.java
+SHADERMOD-HOST	shadersmod.client.SVertexBuilder	src\minecraft\net\minecraft\client\renderer\chunk\RenderChunk.java
+SHADERMOD-HOST	shadersmod.common.SMCLog	src\minecraft\shadersmod\client\Shaders.java
+
+REMAINING HOST BOUNDARY
+----------------------
+Direct imported classes not copied as whole/section in this glue: 269
+These are intentionally retained as the generic Minecraft host boundary when they belong to unrelated gameplay, GUI, model, networking, tile-entity or full renderer subsystems. They are not silently treated as self-contained.
+HOST-BOUNDARY`tnet.minecraft.advancements.AdvancementManager
+HOST-BOUNDARY`tnet.minecraft.advancements.FunctionManager
+HOST-BOUNDARY`tnet.minecraft.block.BlockBed
+HOST-BOUNDARY`tnet.minecraft.block.BlockCactus
+HOST-BOUNDARY`tnet.minecraft.block.BlockChest
+HOST-BOUNDARY`tnet.minecraft.block.BlockEnderChest
+HOST-BOUNDARY`tnet.minecraft.block.BlockEventData
+HOST-BOUNDARY`tnet.minecraft.block.BlockFlower
+HOST-BOUNDARY`tnet.minecraft.block.BlockLiquid
+HOST-BOUNDARY`tnet.minecraft.block.BlockObserver
+HOST-BOUNDARY`tnet.minecraft.block.BlockRedstoneWire
+HOST-BOUNDARY`tnet.minecraft.block.BlockSand
+HOST-BOUNDARY`tnet.minecraft.block.BlockSign
+HOST-BOUNDARY`tnet.minecraft.block.BlockSkull
+HOST-BOUNDARY`tnet.minecraft.block.BlockStem
+HOST-BOUNDARY`tnet.minecraft.block.BlockTallGrass
+HOST-BOUNDARY`tnet.minecraft.block.ITileEntityProvider
+HOST-BOUNDARY`tnet.minecraft.client.audio.ISound
+HOST-BOUNDARY`tnet.minecraft.client.audio.MovingSoundMinecart
+HOST-BOUNDARY`tnet.minecraft.client.audio.PositionedSoundRecord
+HOST-BOUNDARY`tnet.minecraft.client.entity.AbstractClientPlayer
+HOST-BOUNDARY`tnet.minecraft.client.entity.EntityPlayerSP
+HOST-BOUNDARY`tnet.minecraft.client.gui.chat.NarratorChatListener
+HOST-BOUNDARY`tnet.minecraft.client.gui.FontRenderer
+HOST-BOUNDARY`tnet.minecraft.client.gui.GuiDownloadTerrain
+HOST-BOUNDARY`tnet.minecraft.client.gui.GuiMainMenu
+HOST-BOUNDARY`tnet.minecraft.client.gui.GuiNewChat
+HOST-BOUNDARY`tnet.minecraft.client.gui.GuiScreen
+HOST-BOUNDARY`tnet.minecraft.client.gui.MapItemRenderer
+HOST-BOUNDARY`tnet.minecraft.client.gui.ScaledResolution
+HOST-BOUNDARY`tnet.minecraft.client.LoadingScreenRenderer
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelBanner
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelBase
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelBat
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelBlaze
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelBook
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelChest
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelDragon
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelDragonHead
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelEnderCrystal
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelEnderMite
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelEvokerFangs
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelGhast
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelGuardian
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelHorse
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelHumanoidHead
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelLeashKnot
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelMagmaCube
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelOcelot
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelRabbit
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelRenderer
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelShulker
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelShulkerBullet
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelSign
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelSilverfish
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelSkeletonHead
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelSlime
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelSquid
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelVex
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelWitch
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelWither
+HOST-BOUNDARY`tnet.minecraft.client.model.ModelWolf
+HOST-BOUNDARY`tnet.minecraft.client.multiplayer.ChunkProviderClient
+HOST-BOUNDARY`tnet.minecraft.client.network.NetHandlerPlayClient
+HOST-BOUNDARY`tnet.minecraft.client.particle.Particle
+HOST-BOUNDARY`tnet.minecraft.client.particle.ParticleFirework
+HOST-BOUNDARY`tnet.minecraft.client.particle.ParticleManager
+HOST-BOUNDARY`tnet.minecraft.client.renderer.ActiveRenderInfo
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.BakedQuad
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.ItemCameraTransforms
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.ItemOverrideList
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.ModelBlockDefinition
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.ModelManager
+HOST-BOUNDARY`tnet.minecraft.client.renderer.block.model.ModelRotation
+HOST-BOUNDARY`tnet.minecraft.client.renderer.BlockRendererDispatcher
+HOST-BOUNDARY`tnet.minecraft.client.renderer.chunk.ChunkRenderDispatcher
+HOST-BOUNDARY`tnet.minecraft.client.renderer.chunk.IRenderChunkFactory
+HOST-BOUNDARY`tnet.minecraft.client.renderer.chunk.ListChunkFactory
+HOST-BOUNDARY`tnet.minecraft.client.renderer.chunk.VboChunkFactory
+HOST-BOUNDARY`tnet.minecraft.client.renderer.chunk.VisGraph
+HOST-BOUNDARY`tnet.minecraft.client.renderer.color.BlockColors
+HOST-BOUNDARY`tnet.minecraft.client.renderer.culling.ClippingHelper
+HOST-BOUNDARY`tnet.minecraft.client.renderer.culling.ClippingHelperImpl
+HOST-BOUNDARY`tnet.minecraft.client.renderer.culling.Frustum
+HOST-BOUNDARY`tnet.minecraft.client.renderer.culling.ICamera
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.Render
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderBoat
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderEnderCrystal
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderEvokerFangs
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderItemFrame
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderLeashKnot
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderLiving
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderLivingBase
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderManager
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderMinecart
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderShulkerBullet
+HOST-BOUNDARY`tnet.minecraft.client.renderer.entity.RenderWitherSkull
+HOST-BOUNDARY`tnet.minecraft.client.renderer.ItemRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.RegionRenderCacheBuilder
+HOST-BOUNDARY`tnet.minecraft.client.renderer.RenderHelper
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityBannerRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityChestRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityEnchantmentTableRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityEnderChestRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntityShulkerBoxRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntitySignRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntitySkullRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer
+HOST-BOUNDARY`tnet.minecraft.client.renderer.ViewFrustum
+HOST-BOUNDARY`tnet.minecraft.client.resources.I18n
+HOST-BOUNDARY`tnet.minecraft.client.settings.KeyBinding
+HOST-BOUNDARY`tnet.minecraft.client.tutorial.TutorialSteps
+HOST-BOUNDARY`tnet.minecraft.client.util.ITooltipFlag
+HOST-BOUNDARY`tnet.minecraft.crash.CrashReport
+HOST-BOUNDARY`tnet.minecraft.crash.CrashReportCategory
+HOST-BOUNDARY`tnet.minecraft.crash.ICrashReportDetail
+HOST-BOUNDARY`tnet.minecraft.creativetab.CreativeTabs
+HOST-BOUNDARY`tnet.minecraft.enchantment.EnchantmentHelper
+HOST-BOUNDARY`tnet.minecraft.entity.effect.EntityLightningBolt
+HOST-BOUNDARY`tnet.minecraft.entity.EntityList
+HOST-BOUNDARY`tnet.minecraft.entity.EntityLiving
+HOST-BOUNDARY`tnet.minecraft.entity.EntityTracker
+HOST-BOUNDARY`tnet.minecraft.entity.EnumCreatureType
+HOST-BOUNDARY`tnet.minecraft.entity.INpc
+HOST-BOUNDARY`tnet.minecraft.entity.item.EntityFallingBlock
+HOST-BOUNDARY`tnet.minecraft.entity.item.EntityItemFrame
+HOST-BOUNDARY`tnet.minecraft.entity.item.EntityMinecart
+HOST-BOUNDARY`tnet.minecraft.entity.item.EntityXPOrb
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntityEnderman
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntitySkeleton
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntitySpider
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntityWitch
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntityZombie
+HOST-BOUNDARY`tnet.minecraft.entity.monster.EntityZombieVillager
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityAnimal
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityBat
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityChicken
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityCow
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityPig
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntitySheep
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntitySkeletonHorse
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntitySquid
+HOST-BOUNDARY`tnet.minecraft.entity.passive.EntityWaterMob
+HOST-BOUNDARY`tnet.minecraft.entity.player.EntityPlayerMP
+HOST-BOUNDARY`tnet.minecraft.entity.player.EnumPlayerModelParts
+HOST-BOUNDARY`tnet.minecraft.entity.player.InventoryPlayer
+HOST-BOUNDARY`tnet.minecraft.init.Biomes
+HOST-BOUNDARY`tnet.minecraft.init.Enchantments
+HOST-BOUNDARY`tnet.minecraft.init.MobEffects
+HOST-BOUNDARY`tnet.minecraft.init.SoundEvents
+HOST-BOUNDARY`tnet.minecraft.inventory.Container
+HOST-BOUNDARY`tnet.minecraft.inventory.ContainerRepair
+HOST-BOUNDARY`tnet.minecraft.inventory.IInventory
+HOST-BOUNDARY`tnet.minecraft.item.EnumDyeColor
+HOST-BOUNDARY`tnet.minecraft.item.ItemArmor
+HOST-BOUNDARY`tnet.minecraft.item.ItemDye
+HOST-BOUNDARY`tnet.minecraft.item.ItemMonsterPlacer
+HOST-BOUNDARY`tnet.minecraft.item.ItemRecord
+HOST-BOUNDARY`tnet.minecraft.nbt.NBTTagCompound
+HOST-BOUNDARY`tnet.minecraft.network.Packet
+HOST-BOUNDARY`tnet.minecraft.network.PacketBuffer
+HOST-BOUNDARY`tnet.minecraft.network.play.client.CPacketClientSettings
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketBlockAction
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketChangeGameState
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketEntityStatus
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketExplosion
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketParticles
+HOST-BOUNDARY`tnet.minecraft.network.play.server.SPacketSpawnGlobalEntity
+HOST-BOUNDARY`tnet.minecraft.pathfinding.PathWorldListener
+HOST-BOUNDARY`tnet.minecraft.potion.Potion
+HOST-BOUNDARY`tnet.minecraft.potion.PotionEffect
+HOST-BOUNDARY`tnet.minecraft.profiler.Profiler
+HOST-BOUNDARY`tnet.minecraft.scoreboard.Scoreboard
+HOST-BOUNDARY`tnet.minecraft.scoreboard.ScoreboardSaveData
+HOST-BOUNDARY`tnet.minecraft.scoreboard.ServerScoreboard
+HOST-BOUNDARY`tnet.minecraft.server.integrated.IntegratedServer
+HOST-BOUNDARY`tnet.minecraft.server.management.PlayerChunkMap
+HOST-BOUNDARY`tnet.minecraft.server.MinecraftServer
+HOST-BOUNDARY`tnet.minecraft.src.BlockPosM
+HOST-BOUNDARY`tnet.minecraft.src.ChunkUtils
+HOST-BOUNDARY`tnet.minecraft.src.ClearWater
+HOST-BOUNDARY`tnet.minecraft.src.Lagometer
+HOST-BOUNDARY`tnet.minecraft.src.Lang
+HOST-BOUNDARY`tnet.minecraft.src.NaturalTextures
+HOST-BOUNDARY`tnet.minecraft.src.PlayerControllerOF
+HOST-BOUNDARY`tnet.minecraft.src.RandomMobs
+HOST-BOUNDARY`tnet.minecraft.src.ReflectorForge
+HOST-BOUNDARY`tnet.minecraft.src.RenderEnv
+HOST-BOUNDARY`tnet.minecraft.src.RenderInfoLazy
+HOST-BOUNDARY`tnet.minecraft.stats.StatList
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntity
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntityChest
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntityEnchantmentTable
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntityEndGateway
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntityEndPortal
+HOST-BOUNDARY`tnet.minecraft.tileentity.TileEntitySign
+HOST-BOUNDARY`tnet.minecraft.util.BlockRenderLayer
+HOST-BOUNDARY`tnet.minecraft.util.DamageSource
+HOST-BOUNDARY`tnet.minecraft.util.datafix.DataFixer
+HOST-BOUNDARY`tnet.minecraft.util.datafix.FixTypes
+HOST-BOUNDARY`tnet.minecraft.util.datafix.IDataFixer
+HOST-BOUNDARY`tnet.minecraft.util.datafix.IDataWalker
+HOST-BOUNDARY`tnet.minecraft.util.EntitySelectors
+HOST-BOUNDARY`tnet.minecraft.util.EnumBlockRenderType
+HOST-BOUNDARY`tnet.minecraft.util.EnumHand
+HOST-BOUNDARY`tnet.minecraft.util.EnumHandSide
+HOST-BOUNDARY`tnet.minecraft.util.EnumParticleTypes
+HOST-BOUNDARY`tnet.minecraft.util.IProgressUpdate
+HOST-BOUNDARY`tnet.minecraft.util.IStringSerializable
+HOST-BOUNDARY`tnet.minecraft.util.IThreadListener
+HOST-BOUNDARY`tnet.minecraft.util.JsonUtils
+HOST-BOUNDARY`tnet.minecraft.util.math.RayTraceResult
+HOST-BOUNDARY`tnet.minecraft.util.Mirror
+HOST-BOUNDARY`tnet.minecraft.util.MouseFilter
+HOST-BOUNDARY`tnet.minecraft.util.NonNullList
+HOST-BOUNDARY`tnet.minecraft.util.ObjectIntIdentityMap
+HOST-BOUNDARY`tnet.minecraft.util.registry.RegistryNamespaced
+HOST-BOUNDARY`tnet.minecraft.util.registry.RegistryNamespacedDefaultedByKey
+HOST-BOUNDARY`tnet.minecraft.util.ReportedException
+HOST-BOUNDARY`tnet.minecraft.util.Rotation
+HOST-BOUNDARY`tnet.minecraft.util.ScreenShotHelper
+HOST-BOUNDARY`tnet.minecraft.util.SoundCategory
+HOST-BOUNDARY`tnet.minecraft.util.SoundEvent
+HOST-BOUNDARY`tnet.minecraft.util.text.ITextComponent
+HOST-BOUNDARY`tnet.minecraft.util.text.TextComponentString
+HOST-BOUNDARY`tnet.minecraft.util.text.TextComponentTranslation
+HOST-BOUNDARY`tnet.minecraft.util.text.translation.I18n
+HOST-BOUNDARY`tnet.minecraft.util.WeightedRandom
+HOST-BOUNDARY`tnet.minecraft.village.VillageCollection
+HOST-BOUNDARY`tnet.minecraft.village.VillageSiege
+HOST-BOUNDARY`tnet.minecraft.world.chunk.BlockStateContainer
+HOST-BOUNDARY`tnet.minecraft.world.chunk.ChunkPrimer
+HOST-BOUNDARY`tnet.minecraft.world.chunk.storage.IChunkLoader
+HOST-BOUNDARY`tnet.minecraft.world.ColorizerFoliage
+HOST-BOUNDARY`tnet.minecraft.world.ColorizerGrass
+HOST-BOUNDARY`tnet.minecraft.world.end.DragonFightManager
+HOST-BOUNDARY`tnet.minecraft.world.EnumDifficulty
+HOST-BOUNDARY`tnet.minecraft.world.Explosion
+HOST-BOUNDARY`tnet.minecraft.world.GameType
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkGeneratorDebug
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkGeneratorEnd
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkGeneratorFlat
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkGeneratorHell
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkGeneratorOverworld
+HOST-BOUNDARY`tnet.minecraft.world.gen.ChunkProviderServer
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenAbstractTree
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenBigTree
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenDoublePlant
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenerator
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGeneratorBonusChest
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenSwamp
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenTallGrass
+HOST-BOUNDARY`tnet.minecraft.world.gen.feature.WorldGenTrees
+HOST-BOUNDARY`tnet.minecraft.world.gen.FlatGeneratorInfo
+HOST-BOUNDARY`tnet.minecraft.world.gen.IChunkGenerator
+HOST-BOUNDARY`tnet.minecraft.world.gen.NoiseGeneratorPerlin
+HOST-BOUNDARY`tnet.minecraft.world.gen.structure.StructureBoundingBox
+HOST-BOUNDARY`tnet.minecraft.world.gen.structure.template.TemplateManager
+HOST-BOUNDARY`tnet.minecraft.world.IInteractionObject
+HOST-BOUNDARY`tnet.minecraft.world.IWorldEventListener
+HOST-BOUNDARY`tnet.minecraft.world.storage.ISaveHandler
+HOST-BOUNDARY`tnet.minecraft.world.storage.loot.LootTableManager
+HOST-BOUNDARY`tnet.minecraft.world.storage.MapStorage
+HOST-BOUNDARY`tnet.minecraft.world.storage.SaveDataMemoryStorage
+HOST-BOUNDARY`tnet.minecraft.world.storage.SaveHandlerMP
+HOST-BOUNDARY`tnet.minecraft.world.storage.WorldSavedData
+HOST-BOUNDARY`tnet.minecraft.world.storage.WorldSavedDataCallableSave
+HOST-BOUNDARY`tnet.minecraft.world.WorldSettings
+
+INTERPRETATION
+--------------
+The targeted sky/cloud/light host calls are covered by exact source copies/sections plus the external LWJGL artifacts. The remaining boundary means a standalone rewrite still needs either the rest of the Minecraft runtime or an adapter that implements the documented contracts; it does not mean the focused cloud, sky, static-light or dynamic-light paths lost their host inputs.
+This audit is static. It verifies source presence, copy hashes and declared ranges; it does not claim Java compilation, OpenGL context creation, shader compilation or a running Minecraft client.

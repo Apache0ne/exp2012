@@ -1,0 +1,359 @@
+Extracted sections from: src\minecraft\shadersmod\client\Shaders.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 110-126 | sky, fog and shadow state fields =====
+	public static boolean itemToRenderMainTranslucent = false;
+	public static boolean itemToRenderOffTranslucent = false;
+	static float[] sunPosition = new float[4];
+	static float[] moonPosition = new float[4];
+	static float[] shadowLightPosition = new float[4];
+	static float[] upPosition = new float[4];
+	static float[] shadowLightPositionVector = new float[4];
+	static float[] upPosModelView = new float[] { 0.0F, 100.0F, 0.0F, 0.0F };
+	static float[] sunPosModelView = new float[] { 0.0F, 100.0F, 0.0F, 0.0F };
+	static float[] moonPosModelView = new float[] { 0.0F, -100.0F, 0.0F, 0.0F };
+	private static float[] tempMat = new float[16];
+	static float clearColorR;
+	static float clearColorG;
+	static float clearColorB;
+	static float skyColorR;
+	static float skyColorG;
+	static float skyColorB;
+
+===== SOURCE LINES 213-254 | shader program IDs and sky/cloud/weather/shadow program names =====
+	public static final int ProgramNone = 0;
+	public static final int ProgramBasic = 1;
+	public static final int ProgramTextured = 2;
+	public static final int ProgramTexturedLit = 3;
+	public static final int ProgramSkyBasic = 4;
+	public static final int ProgramSkyTextured = 5;
+	public static final int ProgramClouds = 6;
+	public static final int ProgramTerrain = 7;
+	public static final int ProgramTerrainSolid = 8;
+	public static final int ProgramTerrainCutoutMip = 9;
+	public static final int ProgramTerrainCutout = 10;
+	public static final int ProgramDamagedBlock = 11;
+	public static final int ProgramWater = 12;
+	public static final int ProgramBlock = 13;
+	public static final int ProgramBeaconBeam = 14;
+	public static final int ProgramItem = 15;
+	public static final int ProgramEntities = 16;
+	public static final int ProgramArmorGlint = 17;
+	public static final int ProgramSpiderEyes = 18;
+	public static final int ProgramHand = 19;
+	public static final int ProgramWeather = 20;
+	public static final int ProgramComposite = 21;
+	public static final int ProgramComposite1 = 22;
+	public static final int ProgramComposite2 = 23;
+	public static final int ProgramComposite3 = 24;
+	public static final int ProgramComposite4 = 25;
+	public static final int ProgramComposite5 = 26;
+	public static final int ProgramComposite6 = 27;
+	public static final int ProgramComposite7 = 28;
+	public static final int ProgramFinal = 29;
+	public static final int ProgramShadow = 30;
+	public static final int ProgramShadowSolid = 31;
+	public static final int ProgramShadowCutout = 32;
+	public static final int ProgramCount = 33;
+	public static final int MaxCompositePasses = 8;
+	private static final String[] programNames = new String[] { "", "gbuffers_basic", "gbuffers_textured",
+			"gbuffers_textured_lit", "gbuffers_skybasic", "gbuffers_skytextured", "gbuffers_clouds", "gbuffers_terrain",
+			"gbuffers_terrain_solid", "gbuffers_terrain_cutout_mip", "gbuffers_terrain_cutout", "gbuffers_damagedblock",
+			"gbuffers_water", "gbuffers_block", "gbuffers_beaconbeam", "gbuffers_item", "gbuffers_entities",
+			"gbuffers_armor_glint", "gbuffers_spidereyes", "gbuffers_hand", "gbuffers_weather", "composite",
+			"composite1", "composite2", "composite3", "composite4", "composite5", "composite6", "composite7", "final",
+			"shadow", "shadow_solid", "shadow_cutout" };
+
+===== SOURCE LINES 3224-3240 | shader fog and clear-color uniforms =====
+	public static int setFogMode(int val) {
+		fogMode = val;
+		return val;
+	}
+
+	public static void setFogColor(float r, float g, float b) {
+		fogColorR = r;
+		fogColorG = g;
+		fogColorB = b;
+	}
+
+	public static void setClearColor(float red, float green, float blue, float alpha) {
+		GlStateManager.clearColor(red, green, blue, alpha);
+		clearColorR = red;
+		clearColorG = green;
+		clearColorB = blue;
+	}
+
+===== SOURCE LINES 3279-3415 | camera, celestial angle and shadow-light position setup =====
+	public static void setCamera(float partialTicks) {
+		Entity entity = mc.getRenderViewEntity();
+		double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
+		double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
+		double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
+		cameraPositionX = d0;
+		cameraPositionY = d1;
+		cameraPositionZ = d2;
+		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, (FloatBuffer) projection.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) projectionInverse.position(0), (FloatBuffer) projection.position(0),
+				faProjectionInverse, faProjection);
+		projection.position(0);
+		projectionInverse.position(0);
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, (FloatBuffer) modelView.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) modelViewInverse.position(0), (FloatBuffer) modelView.position(0),
+				faModelViewInverse, faModelView);
+		modelView.position(0);
+		modelViewInverse.position(0);
+		checkGLError("setCamera");
+	}
+
+	public static void setCameraShadow(float partialTicks) {
+		Entity entity = mc.getRenderViewEntity();
+		double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
+		double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
+		double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
+		cameraPositionX = d0;
+		cameraPositionY = d1;
+		cameraPositionZ = d2;
+		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, (FloatBuffer) projection.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) projectionInverse.position(0), (FloatBuffer) projection.position(0),
+				faProjectionInverse, faProjection);
+		projection.position(0);
+		projectionInverse.position(0);
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, (FloatBuffer) modelView.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) modelViewInverse.position(0), (FloatBuffer) modelView.position(0),
+				faModelViewInverse, faModelView);
+		modelView.position(0);
+		modelViewInverse.position(0);
+		GL11.glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+
+		if (shadowMapIsOrtho) {
+			GL11.glOrtho((double) (-shadowMapHalfPlane), (double) shadowMapHalfPlane, (double) (-shadowMapHalfPlane),
+					(double) shadowMapHalfPlane, 0.05000000074505806D, 256.0D);
+		} else {
+			GLU.gluPerspective(shadowMapFOV, (float) shadowMapWidth / (float) shadowMapHeight, 0.05F, 256.0F);
+		}
+
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glTranslatef(0.0F, 0.0F, -100.0F);
+		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+		celestialAngle = mc.world.getCelestialAngle(partialTicks);
+		sunAngle = celestialAngle < 0.75F ? celestialAngle + 0.25F : celestialAngle - 0.75F;
+		float f = celestialAngle * -360.0F;
+		float f1 = shadowAngleInterval > 0.0F ? f % shadowAngleInterval - shadowAngleInterval * 0.5F : 0.0F;
+
+		if ((double) sunAngle <= 0.5D) {
+			GL11.glRotatef(f - f1, 0.0F, 0.0F, 1.0F);
+			GL11.glRotatef(sunPathRotation, 1.0F, 0.0F, 0.0F);
+			shadowAngle = sunAngle;
+		} else {
+			GL11.glRotatef(f + 180.0F - f1, 0.0F, 0.0F, 1.0F);
+			GL11.glRotatef(sunPathRotation, 1.0F, 0.0F, 0.0F);
+			shadowAngle = sunAngle - 0.5F;
+		}
+
+		if (shadowMapIsOrtho) {
+			float f2 = shadowIntervalSize;
+			float f3 = f2 / 2.0F;
+			GL11.glTranslatef((float) d0 % f2 - f3, (float) d1 % f2 - f3, (float) d2 % f2 - f3);
+		}
+
+		float f9 = sunAngle * ((float) Math.PI * 2F);
+		float f10 = (float) Math.cos((double) f9);
+		float f4 = (float) Math.sin((double) f9);
+		float f5 = sunPathRotation * ((float) Math.PI * 2F);
+		float f6 = f10;
+		float f7 = f4 * (float) Math.cos((double) f5);
+		float f8 = f4 * (float) Math.sin((double) f5);
+
+		if ((double) sunAngle > 0.5D) {
+			f6 = -f10;
+			f7 = -f7;
+			f8 = -f8;
+		}
+
+		shadowLightPositionVector[0] = f6;
+		shadowLightPositionVector[1] = f7;
+		shadowLightPositionVector[2] = f8;
+		shadowLightPositionVector[3] = 0.0F;
+		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, (FloatBuffer) shadowProjection.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) shadowProjectionInverse.position(0),
+				(FloatBuffer) shadowProjection.position(0), faShadowProjectionInverse, faShadowProjection);
+		shadowProjection.position(0);
+		shadowProjectionInverse.position(0);
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, (FloatBuffer) shadowModelView.position(0));
+		SMath.invertMat4FBFA((FloatBuffer) shadowModelViewInverse.position(0),
+				(FloatBuffer) shadowModelView.position(0), faShadowModelViewInverse, faShadowModelView);
+		shadowModelView.position(0);
+		shadowModelViewInverse.position(0);
+		setProgramUniformMatrix4ARB("gbufferProjection", false, projection);
+		setProgramUniformMatrix4ARB("gbufferProjectionInverse", false, projectionInverse);
+		setProgramUniformMatrix4ARB("gbufferPreviousProjection", false, previousProjection);
+		setProgramUniformMatrix4ARB("gbufferModelView", false, modelView);
+		setProgramUniformMatrix4ARB("gbufferModelViewInverse", false, modelViewInverse);
+		setProgramUniformMatrix4ARB("gbufferPreviousModelView", false, previousModelView);
+		setProgramUniformMatrix4ARB("shadowProjection", false, shadowProjection);
+		setProgramUniformMatrix4ARB("shadowProjectionInverse", false, shadowProjectionInverse);
+		setProgramUniformMatrix4ARB("shadowModelView", false, shadowModelView);
+		setProgramUniformMatrix4ARB("shadowModelViewInverse", false, shadowModelViewInverse);
+		mc.gameSettings.thirdPersonView = 1;
+		checkGLError("setCamera");
+	}
+
+	public static void preCelestialRotate() {
+		GL11.glRotatef(sunPathRotation * 1.0F, 0.0F, 0.0F, 1.0F);
+		checkGLError("preCelestialRotate");
+	}
+
+	public static void postCelestialRotate() {
+		FloatBuffer floatbuffer = tempMatrixDirectBuffer;
+		floatbuffer.clear();
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, floatbuffer);
+		floatbuffer.get(tempMat, 0, 16);
+		SMath.multiplyMat4xVec4(sunPosition, tempMat, sunPosModelView);
+		SMath.multiplyMat4xVec4(moonPosition, tempMat, moonPosModelView);
+		System.arraycopy(shadowAngle == sunAngle ? sunPosition : moonPosition, 0, shadowLightPosition, 0, 3);
+		setProgramUniform3f("sunPosition", sunPosition[0], sunPosition[1], sunPosition[2]);
+		setProgramUniform3f("moonPosition", moonPosition[0], moonPosition[1], moonPosition[2]);
+		setProgramUniform3f("shadowLightPosition", shadowLightPosition[0], shadowLightPosition[1],
+				shadowLightPosition[2]);
+		checkGLError("postCelestialRotate");
+	}
+
+
+===== SOURCE LINES 3613-3689 | sky program, sky color, horizon and celestial hooks =====
+	public static void beginSky() {
+		isRenderingSky = true;
+		fogEnabled = true;
+		setDrawBuffers(dfbDrawBuffers);
+		useProgram(5);
+		pushEntity(-2, 0);
+	}
+
+	public static void setSkyColor(Vec3d v3color) {
+		skyColorR = (float) v3color.x;
+		skyColorG = (float) v3color.y;
+		skyColorB = (float) v3color.z;
+		setProgramUniform3f("skyColor", skyColorR, skyColorG, skyColorB);
+	}
+
+	public static void drawHorizon() {
+		BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+		float f = (float) (mc.gameSettings.renderDistanceChunks * 16);
+		double d0 = (double) f * 0.9238D;
+		double d1 = (double) f * 0.3826D;
+		double d2 = -d1;
+		double d3 = -d0;
+		double d4 = 16.0D;
+		double d5 = -cameraPositionY;
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+		bufferbuilder.pos(d2, d5, d3).endVertex();
+		bufferbuilder.pos(d2, d4, d3).endVertex();
+		bufferbuilder.pos(d3, d4, d2).endVertex();
+		bufferbuilder.pos(d3, d5, d2).endVertex();
+		bufferbuilder.pos(d3, d5, d2).endVertex();
+		bufferbuilder.pos(d3, d4, d2).endVertex();
+		bufferbuilder.pos(d3, d4, d1).endVertex();
+		bufferbuilder.pos(d3, d5, d1).endVertex();
+		bufferbuilder.pos(d3, d5, d1).endVertex();
+		bufferbuilder.pos(d3, d4, d1).endVertex();
+		bufferbuilder.pos(d2, d4, d1).endVertex();
+		bufferbuilder.pos(d2, d5, d1).endVertex();
+		bufferbuilder.pos(d2, d5, d1).endVertex();
+		bufferbuilder.pos(d2, d4, d1).endVertex();
+		bufferbuilder.pos(d1, d4, d0).endVertex();
+		bufferbuilder.pos(d1, d5, d0).endVertex();
+		bufferbuilder.pos(d1, d5, d0).endVertex();
+		bufferbuilder.pos(d1, d4, d0).endVertex();
+		bufferbuilder.pos(d0, d4, d1).endVertex();
+		bufferbuilder.pos(d0, d5, d1).endVertex();
+		bufferbuilder.pos(d0, d5, d1).endVertex();
+		bufferbuilder.pos(d0, d4, d1).endVertex();
+		bufferbuilder.pos(d0, d4, d2).endVertex();
+		bufferbuilder.pos(d0, d5, d2).endVertex();
+		bufferbuilder.pos(d0, d5, d2).endVertex();
+		bufferbuilder.pos(d0, d4, d2).endVertex();
+		bufferbuilder.pos(d1, d4, d3).endVertex();
+		bufferbuilder.pos(d1, d5, d3).endVertex();
+		bufferbuilder.pos(d1, d5, d3).endVertex();
+		bufferbuilder.pos(d1, d4, d3).endVertex();
+		bufferbuilder.pos(d2, d4, d3).endVertex();
+		bufferbuilder.pos(d2, d5, d3).endVertex();
+		Tessellator.getInstance().draw();
+	}
+
+	public static void preSkyList() {
+		setUpPosition();
+		GL11.glColor3f(fogColorR, fogColorG, fogColorB);
+		drawHorizon();
+		GL11.glColor3f(skyColorR, skyColorG, skyColorB);
+	}
+
+	public static void endSky() {
+		isRenderingSky = false;
+		setDrawBuffers(dfbDrawBuffers);
+		useProgram(lightmapEnabled ? 3 : 2);
+		popEntity();
+	}
+
+	public static void beginUpdateChunks() {
+		checkGLError("beginUpdateChunks1");
+		checkFramebufferStatus("beginUpdateChunks1");
+
+===== SOURCE LINES 3720-3729 | cloud shader program hooks =====
+	public static void beginClouds() {
+		fogEnabled = true;
+		pushEntity(-3, 0);
+		useProgram(6);
+	}
+
+	public static void endClouds() {
+		disableFog();
+		popEntity();
+		useProgram(lightmapEnabled ? 3 : 2);
+
+===== SOURCE LINES 3852-3875 | weather shader program hooks =====
+	public static void beginWeather() {
+		if (!isShadowPass) {
+			if (usedDepthBuffers >= 3) {
+				GlStateManager.setActiveTexture(33996);
+				GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, renderWidth, renderHeight);
+				GlStateManager.setActiveTexture(33984);
+			}
+
+			GlStateManager.enableDepth();
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(770, 771);
+			GlStateManager.enableAlpha();
+			useProgram(20);
+		}
+	}
+
+	public static void endWeather() {
+		GlStateManager.disableBlend();
+		useProgram(3);
+	}
+
+	public static void preWater() {
+		if (usedDepthBuffers >= 2) {
+			GlStateManager.setActiveTexture(33995);
+
+===== SOURCE LINES 4050-4064 | shader lightmap program switching =====
+	public static void enableLightmap() {
+		lightmapEnabled = true;
+
+		if (activeProgram == 2) {
+			useProgram(3);
+		}
+	}
+
+	public static void disableLightmap() {
+		lightmapEnabled = false;
+
+		if (activeProgram == 3) {
+			useProgram(2);
+		}
+	}
+

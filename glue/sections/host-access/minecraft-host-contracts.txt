@@ -1,0 +1,296 @@
+HOST DEPENDENCY GLUE: Minecraft client singleton and renderer services
+This file contains exact source lines from mcp940. Captions describe the contract at the host boundary.
+The source text is unchanged; only the surrounding captions are added.
+
+===== Minecraft renderer/world host fields =====
+NAME: Minecraft renderer/world host fields
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 237-318
+GOES TO: Global client services
+INPUT: Minecraft client construction
+OUTPUT / STATE CHANGES: TextureManager, WorldClient, RenderGlobal, EntityRenderer, render-view entity, GameSettings and data directory
+CONSUMERS: Config, CustomSky, CloudRenderer, EntityRenderer, DynamicLights
+WHY INCLUDED: Shows which generic client singleton fields the focused code reaches.
+SOURCE RANGE SHA256: AF084521D3E094B022C9EEFAFB88D246C4A5C0430A6D344619676935E166E366
+BEGIN EXACT SOURCE
+    /** The RenderEngine instance used by Minecraft */
+    private TextureManager renderEngine;
+
+    /** The instance of the Minecraft Client, set in the constructor. */
+    private static Minecraft instance;
+    private final DataFixer dataFixer;
+    public PlayerControllerMP playerController;
+    private boolean fullscreen;
+    private final boolean enableGLErrorChecking = true;
+    private boolean hasCrashed;
+
+    /** Instance of CrashReport. */
+    private CrashReport crashReporter;
+    public int displayWidth;
+    public int displayHeight;
+
+    /** True if the player is connected to a realms server */
+    private boolean connectedToRealms;
+    private final Timer timer = new Timer(20.0F);
+
+    /** Instance of PlayerUsageSnooper. */
+    private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
+    public WorldClient world;
+    public RenderGlobal renderGlobal;
+    private RenderManager renderManager;
+    private RenderItem renderItem;
+    private ItemRenderer itemRenderer;
+    public EntityPlayerSP player;
+    @Nullable
+    private Entity renderViewEntity;
+    public Entity pointedEntity;
+    public ParticleManager effectRenderer;
+
+    /** Manages all search trees */
+    private SearchTreeManager searchTreeManager = new SearchTreeManager();
+    private final Session session;
+    private boolean isGamePaused;
+
+    /**
+     * Time passed since the last update in ticks. Used instead of this.timer.renderPartialTicks when paused in
+     * singleplayer.
+     */
+    private float renderPartialTicksPaused;
+
+    /** The font renderer used for displaying and measuring text */
+    public FontRenderer fontRenderer;
+    public FontRenderer standardGalacticFontRenderer;
+    @Nullable
+
+    /** The GuiScreen that's being displayed at the moment. */
+    public GuiScreen currentScreen;
+    public LoadingScreenRenderer loadingScreen;
+    public EntityRenderer entityRenderer;
+    public DebugRenderer debugRenderer;
+
+    /** Mouse left click counter */
+    private int leftClickCounter;
+
+    /** Display width */
+    private final int tempDisplayWidth;
+
+    /** Display height */
+    private final int tempDisplayHeight;
+    @Nullable
+
+    /** Instance of IntegratedServer. */
+    private IntegratedServer integratedServer;
+    public GuiIngame ingameGUI;
+
+    /** Skip render world */
+    public boolean skipRenderWorld;
+
+    /** The ray trace hit that the mouse is over. */
+    public RayTraceResult objectMouseOver;
+
+    /** The game settings that currently hold effect. */
+    public GameSettings gameSettings;
+    public CreativeSettings creativeSettings;
+
+    /** Mouse helper instance. */
+    public MouseHelper mouseHelper;
+    public final File mcDataDir;
+END EXACT SOURCE
+
+===== Minecraft client subsystem construction =====
+NAME: Minecraft client subsystem construction
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 526-603
+GOES TO: Runtime initialization of resources/textures/renderers
+INPUT: Display/window and resource-pack setup
+OUTPUT / STATE CHANGES: Resource manager, TextureManager, EntityRenderer and RenderGlobal instances
+CONSUMERS: All client sky/cloud/light paths
+WHY INCLUDED: Documents the initialization order behind the accessors.
+SOURCE RANGE SHA256: 67373BF6A348A8A0EB9447195F8945CA9DE39B94A0E5ECDD0A8434700A2AAA90
+BEGIN EXACT SOURCE
+        this.gameSettings = new GameSettings(this, this.mcDataDir);
+        this.creativeSettings = new CreativeSettings(this, this.mcDataDir);
+        this.defaultResourcePacks.add(this.mcDefaultResourcePack);
+        this.startTimerHackThread();
+
+        if (this.gameSettings.overrideHeight > 0 && this.gameSettings.overrideWidth > 0)
+        {
+            this.displayWidth = this.gameSettings.overrideWidth;
+            this.displayHeight = this.gameSettings.overrideHeight;
+        }
+
+        LOGGER.info("LWJGL Version: {}", (Object)Sys.getVersion());
+        this.setWindowIcon();
+        this.setInitialDisplayMode();
+        this.createDisplay();
+        OpenGlHelper.initializeTextures();
+        this.framebufferMc = new Framebuffer(this.displayWidth, this.displayHeight, true);
+        this.framebufferMc.setFramebufferColor(0.0F, 0.0F, 0.0F, 0.0F);
+        this.registerMetadataSerializers();
+        this.mcResourcePackRepository = new ResourcePackRepository(this.fileResourcepacks, new File(this.mcDataDir, "server-resource-packs"), this.mcDefaultResourcePack, this.metadataSerializer_, this.gameSettings);
+        this.mcResourceManager = new SimpleReloadableResourceManager(this.metadataSerializer_);
+        this.mcLanguageManager = new LanguageManager(this.metadataSerializer_, this.gameSettings.language);
+        this.mcResourceManager.registerReloadListener(this.mcLanguageManager);
+        this.refreshResources();
+        this.renderEngine = new TextureManager(this.mcResourceManager);
+        this.mcResourceManager.registerReloadListener(this.renderEngine);
+        this.drawSplashScreen(this.renderEngine);
+        this.skinManager = new SkinManager(this.renderEngine, new File(this.fileAssets, "skins"), this.sessionService);
+        this.saveLoader = new AnvilSaveConverter(new File(this.mcDataDir, "saves"), this.dataFixer);
+        this.mcSoundHandler = new SoundHandler(this.mcResourceManager, this.gameSettings);
+        this.mcResourceManager.registerReloadListener(this.mcSoundHandler);
+        this.mcMusicTicker = new MusicTicker(this);
+        this.fontRenderer = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii.png"), this.renderEngine, false);
+
+        if (this.gameSettings.language != null)
+        {
+            this.fontRenderer.setUnicodeFlag(this.isUnicode());
+            this.fontRenderer.setBidiFlag(this.mcLanguageManager.isCurrentLanguageBidirectional());
+        }
+
+        this.standardGalacticFontRenderer = new FontRenderer(this.gameSettings, new ResourceLocation("textures/font/ascii_sga.png"), this.renderEngine, false);
+        this.mcResourceManager.registerReloadListener(this.fontRenderer);
+        this.mcResourceManager.registerReloadListener(this.standardGalacticFontRenderer);
+        this.mcResourceManager.registerReloadListener(new GrassColorReloadListener());
+        this.mcResourceManager.registerReloadListener(new FoliageColorReloadListener());
+        this.mouseHelper = new MouseHelper();
+        this.checkGLError("Pre startup");
+        GlStateManager.enableTexture2D();
+        GlStateManager.shadeModel(7425);
+        GlStateManager.clearDepth(1.0D);
+        GlStateManager.enableDepth();
+        GlStateManager.depthFunc(515);
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(516, 0.1F);
+        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
+        GlStateManager.matrixMode(5889);
+        GlStateManager.loadIdentity();
+        GlStateManager.matrixMode(5888);
+        this.checkGLError("Startup");
+        this.textureMapBlocks = new TextureMap("textures");
+        this.textureMapBlocks.setMipmapLevels(this.gameSettings.mipmapLevels);
+        this.renderEngine.loadTickableTexture(TextureMap.LOCATION_BLOCKS_TEXTURE, this.textureMapBlocks);
+        this.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        this.textureMapBlocks.setBlurMipmapDirect(false, this.gameSettings.mipmapLevels > 0);
+        this.modelManager = new ModelManager(this.textureMapBlocks);
+        this.mcResourceManager.registerReloadListener(this.modelManager);
+        this.blockColors = BlockColors.init();
+        this.itemColors = ItemColors.init(this.blockColors);
+        this.renderItem = new RenderItem(this.renderEngine, this.modelManager, this.itemColors);
+        this.renderManager = new RenderManager(this.renderEngine, this.renderItem);
+        this.itemRenderer = new ItemRenderer(this);
+        this.mcResourceManager.registerReloadListener(this.renderItem);
+        this.entityRenderer = new EntityRenderer(this, this.mcResourceManager);
+        this.mcResourceManager.registerReloadListener(this.entityRenderer);
+        this.blockRenderDispatcher = new BlockRendererDispatcher(this.modelManager.getBlockModelShapes(), this.blockColors);
+        this.mcResourceManager.registerReloadListener(this.blockRenderDispatcher);
+        this.renderGlobal = new RenderGlobal(this);
+        this.mcResourceManager.registerReloadListener(this.renderGlobal);
+END EXACT SOURCE
+
+===== Minecraft singleton accessor =====
+NAME: Minecraft singleton accessor
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 3011-3014
+GOES TO: Global client instance
+INPUT: Static client lifecycle
+OUTPUT / STATE CHANGES: Minecraft singleton
+CONSUMERS: Config, TextureUtils, CloudRenderer, DynamicLights
+WHY INCLUDED: OptiFine helpers use this host singleton instead of dependency injection.
+SOURCE RANGE SHA256: 6240FBCC4E017C738807B9AB39726CDC2180B99AE773978E7B2F8F8A446A8E0C
+BEGIN EXACT SOURCE
+    public static Minecraft getMinecraft()
+    {
+        return instance;
+    }
+END EXACT SOURCE
+
+===== Minecraft texture/resource manager accessors =====
+NAME: Minecraft texture/resource manager accessors
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 3317-3325
+GOES TO: TextureManager and IResourceManager
+INPUT: Client singleton
+OUTPUT / STATE CHANGES: Manager references used by texture/sky loaders
+CONSUMERS: CustomSky, TextureUtils, Config
+WHY INCLUDED: Explicitly captures the resource-manager boundary.
+SOURCE RANGE SHA256: 302BF6FEA12C6053C0806DEDF18701487FB9A8129C0FD92A03DF59B608177250
+BEGIN EXACT SOURCE
+    public TextureManager getTextureManager()
+    {
+        return this.renderEngine;
+    }
+
+    public IResourceManager getResourceManager()
+    {
+        return this.mcResourceManager;
+    }
+END EXACT SOURCE
+
+===== Minecraft render-view entity accessor =====
+NAME: Minecraft render-view entity accessor
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 3426-3435
+GOES TO: Camera/render-view entity
+INPUT: Client camera selection
+OUTPUT / STATE CHANGES: Entity used for sky, light and dynamic-hand gates
+CONSUMERS: EntityRenderer, DynamicLights
+WHY INCLUDED: Dynamic light and atmospheric calculations depend on the current view entity.
+SOURCE RANGE SHA256: E03DD8DC47DD50BD7B44AA45345147B99F19199E9E7891D0B5963DFBA885DFEC
+BEGIN EXACT SOURCE
+    @Nullable
+    public Entity getRenderViewEntity()
+    {
+        return this.renderViewEntity;
+    }
+
+    public void setRenderViewEntity(Entity viewingEntity)
+    {
+        this.renderViewEntity = viewingEntity;
+        this.entityRenderer.loadEntityShader(viewingEntity);
+END EXACT SOURCE
+
+===== Minecraft renderer/item accessors =====
+NAME: Minecraft renderer/item accessors
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 3481-3494
+GOES TO: RenderManager and ItemRenderer services
+INPUT: Client singleton
+OUTPUT / STATE CHANGES: Host renderer services
+CONSUMERS: RenderGlobal, entity render paths
+WHY INCLUDED: Keeps the renderer service contract visible without copying all Minecraft.
+SOURCE RANGE SHA256: 31BF459DCA3A79A04222A68659D3FE508F4C1F4D1EBAA9016D5989BA802EC5E1
+BEGIN EXACT SOURCE
+    public RenderManager getRenderManager()
+    {
+        return this.renderManager;
+    }
+
+    public RenderItem getRenderItem()
+    {
+        return this.renderItem;
+    }
+
+    public ItemRenderer getItemRenderer()
+    {
+        return this.itemRenderer;
+    }
+END EXACT SOURCE
+
+===== Minecraft partial-tick accessor =====
+NAME: Minecraft partial-tick accessor
+SOURCE: src\minecraft\net\minecraft\client\Minecraft.java
+SOURCE LINES: 3535-3538
+GOES TO: Render interpolation time
+INPUT: Client timer
+OUTPUT / STATE CHANGES: renderPartialTicks
+CONSUMERS: EntityRenderer, RenderGlobal, DynamicLights
+WHY INCLUDED: Sky/cloud/weather and entity lights all interpolate against this host value.
+SOURCE RANGE SHA256: F1AF259E8CBA618E73EF2D7D5707181F3CB3C54547BCCB184B093D187246A111
+BEGIN EXACT SOURCE
+    public float getRenderPartialTicks()
+    {
+        return this.timer.renderPartialTicks;
+    }
+END EXACT SOURCE
+

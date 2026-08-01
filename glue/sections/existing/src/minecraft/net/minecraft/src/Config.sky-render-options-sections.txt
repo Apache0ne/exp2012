@@ -1,0 +1,149 @@
+Extracted sections from: src\minecraft\net\minecraft\src\Config.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 634-676 | rain and cloud rendering options =====
+    public static boolean isRainFancy()
+    {
+        if (gameSettings.ofRain == 0)
+        {
+            return gameSettings.fancyGraphics;
+        }
+        else
+        {
+            return gameSettings.ofRain == 2;
+        }
+    }
+
+    public static boolean isRainOff()
+    {
+        return gameSettings.ofRain == 3;
+    }
+
+    public static boolean isCloudsFancy()
+    {
+        if (gameSettings.ofClouds != 0)
+        {
+            return gameSettings.ofClouds == 2;
+        }
+        else if (isShaders() && !Shaders.shaderPackClouds.isDefault())
+        {
+            return Shaders.shaderPackClouds.isFancy();
+        }
+        else if (texturePackClouds != 0)
+        {
+            return texturePackClouds == 2;
+        }
+        else
+        {
+            return gameSettings.fancyGraphics;
+        }
+    }
+
+    public static boolean isCloudsOff()
+    {
+        if (gameSettings.ofClouds != 0)
+        {
+            return gameSettings.ofClouds == 3;
+        }
+
+===== SOURCE LINES 1149-1214 | sky, sun/moon, stars and texture gates =====
+    public static boolean isWeatherEnabled()
+    {
+        return gameSettings.ofWeather;
+    }
+
+    public static boolean isSkyEnabled()
+    {
+        return gameSettings.ofSky;
+    }
+
+    public static boolean isSunMoonEnabled()
+    {
+        return gameSettings.ofSunMoon;
+    }
+
+    public static boolean isSunTexture()
+    {
+        if (!isSunMoonEnabled())
+        {
+            return false;
+        }
+        else
+        {
+            return !isShaders() || Shaders.isSun();
+        }
+    }
+
+    public static boolean isMoonTexture()
+    {
+        if (!isSunMoonEnabled())
+        {
+            return false;
+        }
+        else
+        {
+            return !isShaders() || Shaders.isMoon();
+        }
+    }
+
+    public static boolean isVignetteEnabled()
+    {
+        if (isShaders() && !Shaders.isVignette())
+        {
+            return false;
+        }
+        else if (gameSettings.ofVignette == 0)
+        {
+            return gameSettings.fancyGraphics;
+        }
+        else
+        {
+            return gameSettings.ofVignette == 2;
+        }
+    }
+
+    public static boolean isStarsEnabled()
+    {
+        return gameSettings.ofStars;
+    }
+
+    public static void sleep(long p_sleep_0_)
+    {
+        try
+        {
+            Thread.sleep(p_sleep_0_);
+        }
+
+===== SOURCE LINES 1583-1594 | custom colors and custom sky gates =====
+    public static boolean isCustomColors()
+    {
+        return gameSettings.ofCustomColors;
+    }
+
+    public static boolean isCustomSky()
+    {
+        return gameSettings.ofCustomSky;
+    }
+
+    public static boolean isCustomFonts()
+    {
+
+===== SOURCE LINES 2354-2369 | dynamic-light options =====
+    public static boolean isDynamicLights()
+    {
+        return gameSettings.ofDynamicLights != 3;
+    }
+
+    public static boolean isDynamicLightsFast()
+    {
+        return gameSettings.ofDynamicLights == 1;
+    }
+
+    public static boolean isDynamicHandLight()
+    {
+        if (!isDynamicLights())
+        {
+            return false;
+        }
+

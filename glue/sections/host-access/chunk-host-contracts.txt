@@ -1,0 +1,522 @@
+HOST DEPENDENCY GLUE: Chunk storage and relight host access
+This file contains exact source lines from mcp940. Captions describe the contract at the host boundary.
+The source text is unchanged; only the surrounding captions are added.
+
+===== Chunk light/storage host fields =====
+NAME: Chunk light/storage host fields
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 42-160
+GOES TO: Chunk coordinate, world and light-map storage
+INPUT: Chunk construction
+OUTPUT / STATE CHANGES: World reference, x/z coordinates, height/skylight arrays and loaded state
+CONSUMERS: World and RenderChunk
+WHY INCLUDED: Identifies the generic Chunk state surrounding all light-storage methods.
+SOURCE RANGE SHA256: 3BE0A09B392A1B1B99457A6A2FC655D192A826666D24088584C9C4E5B3E8D7F3
+BEGIN EXACT SOURCE
+public class Chunk
+{
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
+
+    /**
+     * Used to store block IDs, block MSBs, Sky-light maps, Block-light maps, and metadata. Each entry corresponds to a
+     * logical segment of 16x16x16 blocks, stacked vertically.
+     * 通常被用来存储方块id，方块msbs，全局光照maps，局部光照maps，还有一些元数据，每一个入口对应一个16*16*16的方块段，垂直堆叠（也就是（16*16）*16*16）
+     * 就是一个section数组
+     */
+    private final ExtendedBlockStorage[] storageArrays;
+
+    /**
+     * Contains a 16x16 mapping on the X/Z plane of the biome ID to which each colum belongs.
+     * 包含在每个柱所属的生物群落ID的X/Z平面上的16x16映射。
+     * 包含每个区块的生物群系ID，XZ平面上的16x16个ID。
+     */
+    private final byte[] blockBiomeArray;
+
+    /**
+     * A map, similar to heightMap, that tracks how far down precipitation can fall.
+     * 一个类似于heightMap的map，记录降水下降的程度
+     */
+    private final int[] precipitationHeightMap;
+
+    /**
+     * Which columns need their skylightMaps updated.
+     * 哪些列需要更新全局光照
+     * */
+    private final boolean[] updateSkylightColumns;
+
+    /**
+     * Whether or not this Chunk is currently loaded into the World
+     * 记录当前这个chunk是否被加载进这个世界
+     * */
+    private boolean loaded;
+
+    /**
+     * Reference to the World object.
+     * 世界对象的引用
+     * */
+    private final World world;
+    /*
+    * 一个256长度的数组，因为一个chunk的底边是256个方块的
+     */
+    private final int[] heightMap;
+
+    /**
+     * The x coordinate of the chunk.
+     * 这个chunk的x轴
+     * */
+    public final int x;
+
+    /** The z coordinate of the chunk.
+     * 这个chunk的z轴
+     * */
+    public final int z;
+    private boolean isGapLightingUpdated; //间隙照明是否更新
+    /*
+    * 平铺实体列表，宝箱之类的
+     */
+    private final Map<BlockPos, TileEntity> tileEntities;
+    /*
+    * 实体列表，比如一些（mob）怪物
+     */
+    private final ClassInheritanceMultiMap<Entity>[] entityLists;
+
+    /** Boolean value indicating if the terrain is populated. */
+    private boolean isTerrainPopulated;
+    private boolean isLightPopulated;
+    private boolean ticked;
+
+    /**
+     * Set to true if the chunk has been modified and needs to be updated internally.
+     * 如果块已被修改并需要内部更新，则设置为true。
+     */
+    private boolean dirty;
+
+    /**
+     * Whether this Chunk has any Entities and thus requires saving on every tick
+     * 此区块是否有任何实体，因此每次勾选都需要保存
+     */
+    private boolean hasEntities;
+
+    /**
+     * The time according to World.worldTime when this chunk was last saved
+     * 根据World.worldTime的上次保存此块的时间
+     * */
+    private long lastSaveTime;
+
+    /**
+     * Lowest value in the heightmap.
+     * 在heightmap列表中的最低值
+     * */
+    private int heightMapMinimum;
+
+    /**
+     * the cumulative number of ticks players have been in this chunk
+     * 在这个chunk中，ticks 玩家的累计数值
+     * */
+    private long inhabitedTime;
+
+    /**
+     * Contains the current round-robin relight check index, and is implied as the relight check location as well.
+     * 包含当前的循环重新点火检查索引，并暗示为重新点火检查位置。
+     */
+    private int queuedLightChecks;
+    private final ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
+    public boolean unloadQueued;
+
+    /**
+     * 创建一个空的chunk对象，也就是只是新建，不赋值
+     * @param worldIn 世界对象
+     * @param x chunk的x坐标
+     * @param z chunk的z坐标
+     */
+    public Chunk(World worldIn, int x, int z)
+    {
+END EXACT SOURCE
+
+===== Chunk block-state lookup =====
+NAME: Chunk block-state lookup
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 629-689
+GOES TO: IBlockState for a block coordinate
+INPUT: x/y/z or BlockPos
+OUTPUT / STATE CHANGES: State from ExtendedBlockStorage, AIR fallback or crash report
+CONSUMERS: World.getBlockState, block light propagation
+WHY INCLUDED: Connects generic Chunk storage to block material/emission queries.
+SOURCE RANGE SHA256: CC4DFFAD05FF9B48833F875B45CCEA7E2EC1570337A6ED07E59F6E0571B31458
+BEGIN EXACT SOURCE
+    public IBlockState getBlockState(BlockPos pos)
+    {
+        return this.getBlockState(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    /**
+     * 返回地图中特定坐标的方块对象
+     * @param x x坐标值
+     * @param y y坐标值
+     * @param z z坐标值
+     * @return IBlockState对象
+     */
+    public IBlockState getBlockState(final int x, final int y, final int z)
+    {
+        if (this.world.getWorldType() == WorldType.DEBUG_ALL_BLOCK_STATES) //如果世界的类型是调试模式
+        {
+            IBlockState iblockstate = null;
+
+            if (y == 60) //debug模式中的障碍层
+            {
+                iblockstate = Blocks.BARRIER.getDefaultState(); //这一层全是障碍方块，直接返回障碍方块
+            }
+
+            if (y == 70) //debug的展示层
+            {
+                iblockstate = ChunkGeneratorDebug.getBlockStateFor(x, z);  //从debug模式获取展示的方块
+            }
+
+            return iblockstate == null ? Blocks.AIR.getDefaultState() : iblockstate; //空方块以空气方块填充
+        }
+        else //如果不是debug模式
+        {
+            try
+            {
+                if (y >= 0 && y >> 4 < this.storageArrays.length) //如果在基岩上面而且方块所在section的id小于本区块的section的数目，也就是16
+                {
+                    ExtendedBlockStorage extendedblockstorage = this.storageArrays[y >> 4]; //获取方块所在section
+
+                    if (extendedblockstorage != NULL_BLOCK_STORAGE)
+                    {
+                        return extendedblockstorage.get(x & 15, y & 15, z & 15); //获取坐标所指向的方块对象
+                    }
+                }
+
+                return Blocks.AIR.getDefaultState(); //如果找不到，返回默认值空气
+            }
+            catch (Throwable throwable)
+            {
+                CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Getting block state");
+                CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being got");
+                crashreportcategory.addDetail("Location", new ICrashReportDetail<String>()
+                {
+                    public String call() throws Exception
+                    {
+                        return CrashReportCategory.getCoordinateInfo(x, y, z);
+                    }
+                });
+                throw new ReportedException(crashreport);
+            }
+        }
+    }
+END EXACT SOURCE
+
+===== Chunk SKY/BLOCK light storage =====
+NAME: Chunk SKY/BLOCK light storage
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 823-902
+GOES TO: Per-block SKY/BLOCK light values and subtraction
+INPUT: EnumSkyBlock, BlockPos and attenuation
+OUTPUT / STATE CHANGES: Reads/writes packed nibble values and returns subtracted light
+CONSUMERS: World.getLight, EntityRenderer lightmap
+WHY INCLUDED: This is the storage half of the host lighting pipeline.
+SOURCE RANGE SHA256: 10D1EBAFC556E706D8B709E85E853D244CD24DC8A06282D72C1636F29AA3E504
+BEGIN EXACT SOURCE
+    public int getLightFor(EnumSkyBlock type, BlockPos pos)
+    {
+        int i = pos.getX() & 15; //取 0-15之间，也就是一个section底面以内
+        int j = pos.getY();
+        int k = pos.getZ() & 15; //取 0-15之间，也就是一个section底面以内
+        ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4]; //得到所在section
+
+        if (extendedblockstorage == NULL_BLOCK_STORAGE)
+        {
+            return this.canSeeSky(pos) ? type.defaultLightValue : 0; //如果能看见天空，就返回默认的光亮值，如果看不见，就返回0
+        }
+        else if (type == EnumSkyBlock.SKY)
+        {
+            return !this.world.provider.hasSkyLight() ? 0 : extendedblockstorage.getSkyLight(i, j & 15, k);//从section获得sky light
+        }
+        else
+        {
+            return type == EnumSkyBlock.BLOCK ? extendedblockstorage.getBlockLight(i, j & 15, k) : type.defaultLightValue;//如果是一个block，就从block处返回局部光照，否则返回默认的光照
+        }
+    }
+
+    public void setLightFor(EnumSkyBlock type, BlockPos pos, int value)
+    {
+        int i = pos.getX() & 15; //获取x坐标并转化为一个chunk内的
+        int j = pos.getY(); //获得y坐标
+        int k = pos.getZ() & 15; //获取x坐标并转化为一个chunk内的
+        ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4]; //获取方块所在section
+
+        if (extendedblockstorage == NULL_BLOCK_STORAGE) //如果section是空的
+        {
+            extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, this.world.provider.hasSkyLight()); //新建一个section
+            this.storageArrays[j >> 4] = extendedblockstorage; //赋值section到section数组
+            this.generateSkylightMap(); //重新生成全局光照map
+        }
+
+        this.dirty = true; //设置chunk为脏
+
+        if (type == EnumSkyBlock.SKY) //如果方块是天空的话
+        {
+            if (this.world.provider.hasSkyLight()) //有全局光照
+            {
+                extendedblockstorage.setSkyLight(i, j & 15, k, value); //设置全局光照
+            }
+        }
+        else if (type == EnumSkyBlock.BLOCK) //如果是方块
+        {
+            extendedblockstorage.setBlockLight(i, j & 15, k, value);//设置局部光照
+        }
+    }
+
+    public int getLightSubtracted(BlockPos pos, int amount)
+    {
+        int i = pos.getX() & 15;
+        int j = pos.getY();
+        int k = pos.getZ() & 15;
+        ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
+
+        if (extendedblockstorage == NULL_BLOCK_STORAGE) //如果section为空，就从worlc里获取skylight
+        {
+            return this.world.provider.hasSkyLight() && amount < EnumSkyBlock.SKY.defaultLightValue ? EnumSkyBlock.SKY.defaultLightValue - amount : 0; //有sky light且够减的话就返回减去的值，如果不是的话返回0
+        }
+        else //如果有section
+        {
+            int l = !this.world.provider.hasSkyLight() ? 0 : extendedblockstorage.getSkyLight(i, j & 15, k); //通过section获得全局光照
+            l = l - amount;//减去衰减值
+            int i1 = extendedblockstorage.getBlockLight(i, j & 15, k); //通过block获得局部光照
+
+            if (i1 > l) //如果局部光照比全局光照还大
+            {
+                l = i1; //就取局部光照
+            }
+
+            return l; //总之就是选择全局光照折损之后的与局部光照之间的最大值
+        }
+    }
+
+    /**
+     * Adds an entity to the chunk.
+     */
+    public void addEntity(Entity entityIn)
+END EXACT SOURCE
+
+===== Chunk sky visibility =====
+NAME: Chunk sky visibility
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 959-970
+GOES TO: Can-see-sky predicate
+INPUT: BlockPos and column height map
+OUTPUT / STATE CHANGES: Boolean sky visibility
+CONSUMERS: World.getRawLight, RenderGlobal
+WHY INCLUDED: Sky light propagation depends on the generic Chunk height map.
+SOURCE RANGE SHA256: AB8A86813EAAD78F5AAE1BD7FAF434174E047846397C0B4CEF563F2191DE71BD
+BEGIN EXACT SOURCE
+    /**
+     * 判断一个区块是否能够看见天空
+     * @param pos 区块的位置对象
+     * @return 能就返回true，否则返回false
+     */
+    public boolean canSeeSky(BlockPos pos)
+    {
+        int i = pos.getX() & 15;
+        int j = pos.getY();
+        int k = pos.getZ() & 15;
+        return j >= this.heightMap[k << 4 | i]; //取出该列的最高值，如果比最高值还大，说明能看见天空，否则看不见
+    }
+END EXACT SOURCE
+
+===== Chunk queued relight checks =====
+NAME: Chunk queued relight checks
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 1499-1635
+GOES TO: Incremental relight/neighbor checks
+INPUT: Queued block positions and block emission
+OUTPUT / STATE CHANGES: World.checkLight calls for affected positions
+CONSUMERS: World and RenderGlobal
+WHY INCLUDED: Captures the host update path after block/light changes.
+SOURCE RANGE SHA256: D5BF14C96B27E18081F557626FBD571DB2B6146C2D76ED5E516F908D1CBF1D40
+BEGIN EXACT SOURCE
+                            if (this.world.getBlockState(blockpos2).getLightValue() > 0)
+                            {
+                                this.world.checkLight(blockpos2);
+                            }
+                        }
+
+                        this.world.checkLight(blockpos1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkLight()
+    {
+        this.isTerrainPopulated = true;
+        this.isLightPopulated = true;
+        BlockPos blockpos = new BlockPos(this.x << 4, 0, this.z << 4);
+
+        if (this.world.provider.hasSkyLight())
+        {
+            if (this.world.isAreaLoaded(blockpos.add(-1, 0, -1), blockpos.add(16, this.world.getSeaLevel(), 16)))
+            {
+                label44:
+
+                for (int i = 0; i < 16; ++i)
+                {
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        if (!this.checkLight(i, j))
+                        {
+                            this.isLightPopulated = false;
+                            break label44;
+                        }
+                    }
+                }
+
+                if (this.isLightPopulated)
+                {
+                    for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
+                    {
+                        int k = enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ? 16 : 1;
+                        this.world.getChunkFromBlockCoords(blockpos.offset(enumfacing, k)).checkLightSide(enumfacing.getOpposite());
+                    }
+
+                    this.setSkylightUpdated();
+                }
+            }
+            else
+            {
+                this.isLightPopulated = false;
+            }
+        }
+    }
+
+    private void setSkylightUpdated()
+    {
+        for (int i = 0; i < this.updateSkylightColumns.length; ++i) //遍历整个updateSkylightColumns
+        {
+            this.updateSkylightColumns[i] = true; //设置为true
+        }
+
+        this.recheckGaps(false); //重新计算gaps？？TODO 不知道啥意思
+    }
+
+    private void checkLightSide(EnumFacing facing)
+    {
+        if (this.isTerrainPopulated)
+        {
+            if (facing == EnumFacing.EAST)
+            {
+                for (int i = 0; i < 16; ++i)
+                {
+                    this.checkLight(15, i);
+                }
+            }
+            else if (facing == EnumFacing.WEST)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    this.checkLight(0, j);
+                }
+            }
+            else if (facing == EnumFacing.SOUTH)
+            {
+                for (int k = 0; k < 16; ++k)
+                {
+                    this.checkLight(k, 15);
+                }
+            }
+            else if (facing == EnumFacing.NORTH)
+            {
+                for (int l = 0; l < 16; ++l)
+                {
+                    this.checkLight(l, 0);
+                }
+            }
+        }
+    }
+
+    private boolean checkLight(int x, int z)
+    {
+        int i = this.getTopFilledSegment();
+        boolean flag = false;
+        boolean flag1 = false;
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos((this.x << 4) + x, 0, (this.z << 4) + z);
+
+        for (int j = i + 16 - 1; j > this.world.getSeaLevel() || j > 0 && !flag1; --j)
+        {
+            blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), j, blockpos$mutableblockpos.getZ());
+            int k = this.getBlockLightOpacity(blockpos$mutableblockpos);
+
+            if (k == 255 && blockpos$mutableblockpos.getY() < this.world.getSeaLevel())
+            {
+                flag1 = true;
+            }
+
+            if (!flag && k > 0)
+            {
+                flag = true;
+            }
+            else if (flag && k == 0 && !this.world.checkLight(blockpos$mutableblockpos))
+            {
+                return false;
+            }
+        }
+
+        for (int l = blockpos$mutableblockpos.getY(); l > 0; --l)
+        {
+            blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
+
+            if (this.getBlockState(blockpos$mutableblockpos).getLightValue() > 0)
+            {
+                this.world.checkLight(blockpos$mutableblockpos);
+            }
+        }
+
+END EXACT SOURCE
+
+===== Chunk empty/loaded/world accessors =====
+NAME: Chunk empty/loaded/world accessors
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 1179-1182
+GOES TO: Empty-chunk fallback predicate
+INPUT: Chunk
+OUTPUT / STATE CHANGES: isEmpty result
+CONSUMERS: RenderChunk/CompiledChunk
+WHY INCLUDED: Documents the host fallback contract.
+SOURCE RANGE SHA256: F3B7FB9679EFE1F3D1921B827F788C6D821A4CB4B3BDC216C241417263529396
+BEGIN EXACT SOURCE
+    public boolean isEmpty()
+    {
+        return false;
+    }
+END EXACT SOURCE
+
+===== Chunk loaded/world accessors =====
+NAME: Chunk loaded/world accessors
+SOURCE: src\minecraft\net\minecraft\world\chunk\Chunk.java
+SOURCE LINES: 1639-1652
+GOES TO: Chunk lifecycle and owning World
+INPUT: Chunk
+OUTPUT / STATE CHANGES: loaded flag and World reference
+CONSUMERS: RenderChunk, DynamicLight
+WHY INCLUDED: Render caches need the host lifecycle and world owner.
+SOURCE RANGE SHA256: C9403271880F3F65DDF0D98FB1F8B3784C06DC0ED84C5F2FBB443175AA9DE53B
+BEGIN EXACT SOURCE
+    public boolean isLoaded()
+    {
+        return this.loaded;
+    }
+
+    public void markLoaded(boolean loaded)
+    {
+        this.loaded = loaded;
+    }
+
+    public World getWorld()
+    {
+        return this.world;
+    }
+END EXACT SOURCE
+

@@ -1,0 +1,16 @@
+Extracted sections from: src\minecraft\net\minecraft\world\biome\Biome.java
+The source code below is preserved without added line-number prefixes.
+See manifest.tsv for the exact original line ranges and section labels.
+
+===== SOURCE LINES 197-206 | temperature-to-sky-color conversion =====
+    public int getSkyColorByTemp(float currentTemperature)
+    {
+        currentTemperature = currentTemperature / 3.0F;
+        currentTemperature = MathHelper.clamp(currentTemperature, -1.0F, 1.0F);
+        return MathHelper.hsvToRGB(0.62222224F - currentTemperature * 0.05F, 0.5F + currentTemperature * 0.1F, 1.0F);
+    }
+
+    public List<Biome.SpawnListEntry> getSpawnableList(EnumCreatureType creatureType)
+    {
+        switch (creatureType)
+

@@ -1,0 +1,164 @@
+Captioned closure additions
+These source excerpts preserve the original code without line-number prefixes.
+Each snippet states its input, output/state changes, consumers, and reason for inclusion.
+
+=== SNIPPET 1 ===
+NAME: Block replacement relight trigger
+SOURCE: src\minecraft\net\minecraft\world\World.java
+SOURCE LINES: 369-420 inclusive
+GOES TO: World.setBlockState(BlockPos, IBlockState, int)
+INPUT: Old/new block states and update flags
+OUTPUT / STATE CHANGES: Calls checkLight when opacity or emitted-light values change, then notifies render/network listeners
+CONSUMERS: Chunk light maps, RenderChunk rebuilds, client/server block updates
+WHY INCLUDED: Propagation code cannot react to changed blocks without this trigger.
+--- SOURCE TEXT (preserved) ---
+    public boolean setBlockState(BlockPos pos, IBlockState newState, int flags)
+    {
+        if (this.isOutsideBuildHeight(pos))
+        {
+            return false;
+        }
+        else if (!this.isRemote && this.worldInfo.getTerrainType() == WorldType.DEBUG_ALL_BLOCK_STATES)
+        {
+            return false;
+        }
+        else
+        {
+            Chunk chunk = this.getChunkFromBlockCoords(pos);
+            Block block = newState.getBlock();
+            IBlockState iblockstate = chunk.setBlockState(pos, newState);
+
+            if (iblockstate == null)
+            {
+                return false;
+            }
+            else
+            {
+                if (newState.getLightOpacity() != iblockstate.getLightOpacity() || newState.getLightValue() != iblockstate.getLightValue())
+                {
+                    this.profiler.startSection("checkLight");
+                    this.checkLight(pos);
+                    this.profiler.endSection();
+                }
+
+                if ((flags & 2) != 0 && (!this.isRemote || (flags & 4) == 0) && chunk.isPopulated())
+                {
+                    this.notifyBlockUpdate(pos, iblockstate, newState, flags);
+                }
+
+                if (!this.isRemote && (flags & 1) != 0)
+                {
+                    this.notifyNeighborsRespectDebug(pos, iblockstate.getBlock(), true);
+
+                    if (newState.hasComparatorInputOverride())
+                    {
+                        this.updateComparatorOutputLevel(pos, block);
+                    }
+                }
+                else if (!this.isRemote && (flags & 16) == 0)
+                {
+                    this.updateObservingBlocksAt(pos, block);
+                }
+
+                return true;
+            }
+        }
+    }
+--- END SNIPPET 1 ---
+
+=== SNIPPET 2 ===
+NAME: Vertical skylight dirty-range trigger
+SOURCE: src\minecraft\net\minecraft\world\World.java
+SOURCE LINES: 482-500 inclusive
+GOES TO: World.markBlocksDirtyVertical(int, int, int, int)
+INPUT: A vertical x/z range and provider sky-light capability
+OUTPUT / STATE CHANGES: Rechecks SKY light along the range and marks the block range for rendering
+CONSUMERS: Chunk skylight map and client chunk rebuild
+WHY INCLUDED: Column changes need a separate skylight invalidation path.
+--- SOURCE TEXT (preserved) ---
+    public void markBlocksDirtyVertical(int x1, int z1, int x2, int z2)
+    {
+        if (x2 > z2)
+        {
+            int i = z2;
+            z2 = x2;
+            x2 = i;
+        }
+
+        if (this.provider.hasSkyLight())
+        {
+            for (int j = x2; j <= z2; ++j)
+            {
+                this.checkLightFor(EnumSkyBlock.SKY, new BlockPos(x1, j, z1));
+            }
+        }
+
+        this.markBlockRangeForRenderUpdate(x1, x2, z1, x1, z2, z1);
+    }
+--- END SNIPPET 2 ---
+
+=== SNIPPET 3 ===
+NAME: Mood/light relight queue hook
+SOURCE: src\minecraft\net\minecraft\world\World.java
+SOURCE LINES: 2680-2683 inclusive
+GOES TO: World.playMoodSoundAndCheckLight(...)
+INPUT: Chunk coordinates and loaded chunk
+OUTPUT / STATE CHANGES: Enqueues chunk relight checks
+CONSUMERS: WorldServer and chunk light maintenance
+WHY INCLUDED: The original light propagation excerpts omitted this queue handoff.
+--- SOURCE TEXT (preserved) ---
+    protected void playMoodSoundAndCheckLight(int p_147467_1_, int p_147467_2_, Chunk chunkIn)
+    {
+        chunkIn.enqueueRelightChecks();
+    }
+--- END SNIPPET 3 ---
+
+=== SNIPPET 4 ===
+NAME: Server skylight tick update
+SOURCE: src\minecraft\net\minecraft\world\WorldServer.java
+SOURCE LINES: 179-215 inclusive
+GOES TO: WorldServer.tick()
+INPUT: World time, provider, and current skylight subtraction
+OUTPUT / STATE CHANGES: Recomputes and publishes skylight subtraction once per server tick
+CONSUMERS: World.getLightSubtracted, EntityRenderer lightmap, sky brightness
+WHY INCLUDED: The client visual state depends on this server-side time/light update.
+--- SOURCE TEXT (preserved) ---
+    public void tick()
+    {
+        super.tick();
+
+        if (this.getWorldInfo().isHardcoreModeEnabled() && this.getDifficulty() != EnumDifficulty.HARD)
+        {
+            this.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+        }
+
+        this.provider.getBiomeProvider().cleanupCache();
+
+        if (this.areAllPlayersAsleep())
+        {
+            if (this.getGameRules().getBoolean("doDaylightCycle"))
+            {
+                long i = this.worldInfo.getWorldTime() + 24000L;
+                this.worldInfo.setWorldTime(i - i % 24000L);
+            }
+
+            this.wakeAllPlayers();
+        }
+
+        this.profiler.startSection("mobSpawner");
+
+        if (this.getGameRules().getBoolean("doMobSpawning") && this.worldInfo.getTerrainType() != WorldType.DEBUG_ALL_BLOCK_STATES)
+        {
+            this.entitySpawner.findChunksForSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs, this.worldInfo.getWorldTotalTime() % 400L == 0L);
+        }
+
+        this.profiler.endStartSection("chunkSource");
+        this.chunkProvider.tick();
+        int j = this.calculateSkylightSubtracted(1.0F);
+
+        if (j != this.getSkylightSubtracted())
+        {
+            this.setSkylightSubtracted(j);
+        }
+--- END SNIPPET 4 ---
+
