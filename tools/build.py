@@ -182,6 +182,19 @@ public final class GeneratedSectionRegistry {{
     return records
 
 
+def build_jar() -> None:
+    manifest = b"Manifest-Version: 1.0\r\nMain-Class: dev.apacheone.exp2012.Main\r\n\r\n"
+    with zipfile.ZipFile(JAR, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
+        entries = [("META-INF/MANIFEST.MF", manifest)]
+        entries.extend((path.relative_to(CLASSES).as_posix(), path.read_bytes())
+                       for path in sorted(CLASSES.rglob("*")) if path.is_file())
+        for name, data in entries:
+            info = zipfile.ZipInfo(name, (1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            bundle.writestr(info, data)
+
+
 def command(args: list[str]) -> subprocess.CompletedProcess[str]:
     print("$", " ".join(args))
     result = subprocess.run(args, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -240,11 +253,12 @@ def main() -> int:
     sources = sorted((ROOT / "src/main/java").rglob("*.java")) + sorted(GENERATED.rglob("*.java"))
     source_list = BUILD / "sources.list"
     source_list.write_text("\n".join(str(p) for p in sources) + "\n", encoding="utf-8")
-    javac, java, jar = tool("javac"), tool("java"), tool("jar")
+    javac, java = tool("javac"), tool("java")
     javac_version = command([javac, "-version"]).stdout.strip()
     java_version = command([java, "-version"]).stdout.splitlines()[0]
     command([javac, "--release", "8", "-Xlint:-options", "-encoding", "UTF-8", "-d", str(CLASSES), "@" + str(source_list)])
-    command([jar, "--create", "--file", str(JAR), "--main-class", "dev.apacheone.exp2012.Main", "-C", str(CLASSES), "."])
+    build_jar()
+    print(f"Built reproducible JAR: {JAR}")
     verify = command([java, "-Djava.awt.headless=true", "-jar", str(JAR), "verify", "--archive", str(archive)])
 
     images: list[dict[str, object]] = []
